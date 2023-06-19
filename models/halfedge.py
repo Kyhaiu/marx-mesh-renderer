@@ -18,12 +18,12 @@ class HalfEdge:
 
     def __repr__(self) -> str:
         repr = "HalfEdge("
-        repr += "id={}, ".format(self.id)
-        repr += "origin={}, ".format(self.origin.id)
-        repr += "twin={}, ".format(self.twin.id)
-        repr += "prev={}, ".format(self.prev.id)
-        repr += "next={}, ".format(self.next.id)
-        repr += "face={}".format(self.face.id)
+        repr += "\tid={}, ".format(self.id)
+        repr += "\torigin={}, ".format(self.origin.id)
+        repr += "\ttwin={}, ".format(self.twin.id)
+        repr += "\tprev={}, ".format(self.prev.id)
+        repr += "\tnext={}, ".format(self.next.id)
+        repr += "\tface={}".format(self.face.id)
         repr += ")"
         return repr
 

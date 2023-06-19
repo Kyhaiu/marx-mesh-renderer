@@ -1,3 +1,5 @@
+import logging
+import math
 from models.face import Face
 from models.halfedge import HalfEdge
 from models.vertex import Vertex
@@ -54,6 +56,15 @@ class Object:
                 "face_objects must be a list, but is {}".format(type(face_objects)))
 
     def create_mesh(self, vertices: list[Vertex], faces: list[list[int]]) -> tuple[list[Vertex], list[HalfEdge], list[Face]]:
+        """
+        Creates a mesh from a list of vertices and faces
+
+        :param vertices: list of vertices
+        :param faces: list containing the indexes of the vertices that form a face
+
+        :return: tuple containing the vertex objects, half-edge objects and face objects
+        """
+
         vertex_objects = []
         face_objects = []
         half_edges = []
@@ -74,37 +85,48 @@ class Object:
         for i, face in enumerate(faces):
             num_vertices = len(face)
             face_half_edges = []
+
             for j in range(num_vertices):
                 half_edge = HalfEdge(id='e' + str(k))
                 half_edges.append(half_edge)
                 face_half_edges.append(half_edge)
                 k += 1
+
             # Connect half-edges within the face
             for j in range(num_vertices):
-                half_edge = face_half_edges[j]
+                half_edge: HalfEdge = face_half_edges[j]
+
                 half_edge.origin = vertex_objects[face[j]]
+                if half_edge.origin.half_edge is None:
+                    # Associate the vertex with the half-edge
+                    vertex_objects[face[j]].half_edge = half_edge
+
                 half_edge.next = face_half_edges[(j + 1) % num_vertices]
                 half_edge.prev = face_half_edges[(j - 1) % num_vertices]
                 half_edge.twin = None  # To be connected later
                 half_edge.face = face_objects[i]
+
             # Associate the first half-edge with the face
             face_objects[i].half_edge = face_half_edges[0]
 
         # Connect twin half-edges
         for i in range(len(half_edges)):
             half_edge = half_edges[i]
+
             if half_edge.twin is None:
                 for j in range(i + 1, len(half_edges)):
                     twin_half_edge = half_edges[j]
+
                     if twin_half_edge.origin == half_edge.next.origin and \
                             twin_half_edge.next.origin == half_edge.origin:
+
                         half_edge.twin = twin_half_edge
                         twin_half_edge.twin = half_edge
                         break
 
         return vertex_objects, half_edges, face_objects
 
-    def apply_transformation(self, matrix: list[list[float]]):
+    def apply_transformation(self, matrix: list[list[float]]) -> None:
         """
         Applies a transformation matrix to the object itself
 
@@ -119,11 +141,84 @@ class Object:
             vertex.z = float(matrix_result[2][0])
             vertex.h = float(matrix_result[3][0])
 
-        # for vertex in self.getVertices():
-        #     matrix_vertex = [[vertex.x], [vertex.y], [vertex.z], [vertex.h]]
-        #     matrix_result = matrixMultiplication(matrix, matrix_vertex)
+    def _rotate(self, angle: float, axis: str) -> None:
+        """
+        Rotates the object itself
 
-        #     vertex.x = matrix_result[0][0]
-        #     vertex.y = matrix_result[1][0]
-        #     vertex.z = matrix_result[2][0]
-        #     vertex.h = matrix_result[3][0]
+        :param angle: rotation angle
+        :param axis: rotation axis
+        """
+        if axis == 'x':
+            matrix = [
+                [1, 0, 0, 0],
+                [0, math.cos(angle), -math.sin(angle), 0],
+                [0, math.sin(angle), math.cos(angle), 0],
+                [0, 0, 0, 1]
+            ]
+        elif axis == 'y':
+            matrix = [
+                [math.cos(angle), 0, math.sin(angle), 0],
+                [0, 1, 0, 0],
+                [-math.sin(angle), 0, math.cos(angle), 0],
+                [0, 0, 0, 1]
+            ]
+        elif axis == 'z':
+            matrix = [
+                [math.cos(angle), -math.sin(angle), 0, 0],
+                [math.sin(angle), math.cos(angle), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ]
+
+        self.apply_transformation(matrix)
+
+    def _translate(self, x: float, y: float, z: float):
+        """
+        Translates the object itself
+
+        :param x: translation in x
+        :param y: translation in y
+        :param z: translation in z
+        """
+        matrix = [
+            [1, 0, 0, x],
+            [0, 1, 0, y],
+            [0, 0, 1, z],
+            [0, 0, 0, 1]
+        ]
+
+        self.apply_transformation(matrix)
+
+    def _scale(self, x: float, y: float, z: float):
+        """
+        Scales the object itself
+
+        :param x: scale in x
+        :param y: scale in y
+        :param z: scale in z
+        """
+        matrix = [
+            [x, 0, 0, 0],
+            [0, y, 0, 0],
+            [0, 0, z, 0],
+            [0, 0, 0, 1]
+        ]
+
+        self.apply_transformation(matrix)
+
+    def _shear(self, x: float, y: float, z: float):
+        """
+        Shears the object itself
+
+        :param x: shear in x
+        :param y: shear in y
+        :param z: shear in z
+        """
+        matrix = [
+            [1, x, x, 0],
+            [y, 1, y, 0],
+            [z, z, 1, 0],
+            [0, 0, 0, 1]
+        ]
+
+        self.apply_transformation(matrix)

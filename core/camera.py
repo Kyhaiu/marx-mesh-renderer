@@ -1,18 +1,19 @@
 from typing import List
 from models.vertex import Vertex
 from utils import pipeline
+from utils.vectors_operations import matrixMultiplication
 
 
 class Camera:
 
     def __init__(
         self,
-        vrp: Vertex,
-        p: Vertex,
-        d: float,
-        viewPort: List[float, float],
-        window: List[float, float],
-        projectionType: str = 'parallel'
+        vrp: Vertex = Vertex(50, 15, 30),
+        p: Vertex = Vertex(20, 6, 15),
+        d: float | int = 17,
+        viewPort: List[float] = [0, 320, 0, 240],
+        window: List[float] = [-8, 8, -5, 5],
+        projectionType: str = 'parallel',
     ):
         """
           This method initialize the camera
@@ -21,13 +22,15 @@ class Camera:
             vrp (Vertex): The position of the camera
             p (Vertex): The focal point
             d (float): The distance between the camera and the focal point
-            viewPort (list): The viewport
-            window (list): The window
+            viewPort (list): The viewport (umin, umax, vmin, vmax)
+            window (list): The window  (width, height)
+            projectionType (str): The projection type (parallel or perspective)
         """
+
         # basic properties for camera
-        self.vrp = vrp
         self.p = p
         self.d = d
+        self.vrp = vrp
         self.viewPort = viewPort
         self.window = window
         self.projectionType = projectionType
@@ -41,6 +44,11 @@ class Camera:
         # transformation matrix from SRC to STR
         self.MjpMatrix: list = None
 
+        # transformation matrix from SRU to STR
+        self.MSruSrtMatrix: list = None
+
+        self.calculateMatrices()
+
     def __str__(self) -> str:
         """
           This method returns the string representation of the camera
@@ -48,174 +56,301 @@ class Camera:
           Returns:
             string (str): The string representation of the camera
         """
-        return f"VRP: {self.vrp}\nFocal Point: {self.p}\nDistance: {self.d}\nViewPort: {self.viewPort}\nWindow: {self.window}"
+        msg = "Camera(\n"
+        msg += "\tvrp: {}\n".format(self.vrp)
+        msg += "\tp: {}\n".format(self.p)
+        msg += "\td: {}\n".format(self.d)
+        msg += "\tviewPort:\n"
+        msg += "\t\tumin: {}\n".format(self.viewPort[0])
+        msg += "\t\tumax: {}\n".format(self.viewPort[1])
+        msg += "\t\tvmin: {}\n".format(self.viewPort[2])
+        msg += "\t\tvmax: {}\n".format(self.viewPort[3])
+        msg += "\twindow:\n"
+        msg += "\t\twidth:\n"
+        msg += "\t\t\txmin: {}\n".format(self.window[0])
+        msg += "\t\t\txmax: {}\n".format(self.window[1])
+        msg += "\t\theight:\n"
+        msg += "\t\t\tymin: {}\n".format(self.window[2])
+        msg += "\t\t\tymax: {}\n".format(self.window[3])
+        msg += "\tprojectionType: {}\n".format(self.projectionType)
+        msg += "\tsrcMatrix: [\n"
+        for row in self.srcMatrix:
+            msg += "\t\t{}\n".format(row)
+        msg += "\t]\n"
+        msg += "\tprojectionMatrix: [\n"
+        for row in self.projectionMatrix:
+            msg += "\t\t{}\n".format(row)
+        msg += "\t]\n"
+        msg += "\tMjpMatrix: [\n"
+        for row in self.MjpMatrix:
+            msg += "\t\t{}\n".format(row)
+        msg += "\t]\n"
+        msg += "\tMSruSrtMatrix: [\n"
+        for row in self.MSruSrtMatrix:
+            msg += "\t\t{}\n".format(row)
+        msg += "\t]\n"
+        msg += ")"
+        return msg
+        # return f"VRP: {self.vrp}\nFocal Point: {self.p}\nDistance: {self.d}\nViewPort: {self.viewPort}\nWindow: {self.window}"
 
-    def getVRP(self) -> Vertex:
+    @property
+    def vrp(self) -> Vertex:
         """
-          This method returns the VRP
+          This method returns the vrp of the camera
 
           Returns:
-            vrp (Vertex): The VRP
+            vrp (Vertex): The vrp of the camera
         """
-        return self.vrp
+        return self.__vrp
 
-    def getFocalPoint(self) -> Vertex:
+    @vrp.setter
+    def vrp(self, vrp: Vertex) -> None:
         """
-          This method returns the focal point
+          This method sets the vrp of the camera
 
-          Returns:
-            p (Vertex): The focal point
+          Parameters:
+            vrp (Vertex): The vrp of the camera
         """
-        return self.p
+        if type(vrp).__name__ == "Vertex":
+            self.__vrp = vrp
+        else:
+            raise TypeError(
+                "vrp must be a Vertex, but is {}".format(type(vrp)))
 
-    def getDistance(self) -> float:
+    @property
+    def p(self) -> Vertex:
         """
-          This method returns the distance
-
-          Returns:
-            d (float): The distance
-        """
-        return self.d
-
-    def getViewPort(self) -> List[float, float]:
-        """
-          This method returns the viewport
+          This method returns the focal point of the camera
 
           Returns:
-            viewPort (list): The viewport
+            p (Vertex): The focal point of the camera
         """
-        return self.viewPort
+        return self.__p
 
-    def getWindow(self) -> List[float, float]:
+    @p.setter
+    def p(self, p: Vertex) -> None:
         """
-          This method returns the window
+          This method sets the focal point of the camera
 
-          Returns:
-            window (list): The window
+          Parameters:
+            p (Vertex): The focal point of the camera
         """
-        return self.window
+        if type(p).__name__ == "Vertex":
+            self.__p = p
+        else:
+            raise TypeError(
+                "p must be a Vertex, but is {}".format(type(p)))
 
-    def getProjectionType(self) -> str:
+    @property
+    def d(self) -> float:
         """
-          This method returns the projection type
-
-          Returns:
-            projectionType (str): The projection type
-        """
-        return self.projectionType
-
-    def getSRCMatrix(self) -> list:
-        """
-          This method returns the SRC matrix used to convert from SRU objects to SRC object
+          This method returns the distance between the camera and the focal point
 
           Returns:
-            srcMatrix (list): The SRC matrix
+            d (float): The distance between the camera and the focal point
         """
-        return self.srcMatrix
+        return self.__d
 
-    def getProjectionMatrix(self) -> list:
+    @d.setter
+    def d(self, d: float | int) -> None:
+        """
+          This method sets the distance between the camera and the focal point
+
+          Parameters:
+            d (float): The distance between the camera and the focal point
+        """
+        if type(d) is float or type(d) is int:
+            self.__d = d
+        else:
+            raise TypeError(
+                "d must be a float or int, but is {}".format(type(d)))
+
+    @property
+    def viewPort(self) -> List[float]:
+        """
+          This method returns the viewport of the camera
+
+          Returns:
+            viewPort (list): The viewport of the camera
+        """
+        return self.__viewPort
+
+    @viewPort.setter
+    def viewPort(self, viewPort: List[float]) -> None:
+        """
+          This method sets the viewport of the camera
+
+          Parameters:
+            viewPort (list): The viewport of the camera
+        """
+        if type(viewPort).__name__ == "list" or None:
+            self.__viewPort = viewPort
+        else:
+            raise TypeError(
+                "viewPort must be a list, but is {}".format(type(viewPort)))
+
+    @property
+    def window(self) -> List[float]:
+        """
+          This method returns the window of the camera
+
+          Returns:
+            window (list): The window of the camera
+        """
+        return self.__window
+
+    @window.setter
+    def window(self, window: List[float]) -> None:
+        """
+          This method sets the window of the camera
+
+          Parameters:
+            window (list): The window of the camera
+        """
+        if type(window).__name__ == "list" or None:
+            self.__window = window
+        else:
+            raise TypeError(
+                "window must be a list, but is {}".format(type(window)))
+
+    @property
+    def projectionType(self) -> str:
+        """
+          This method returns the projection type of the camera
+
+          Returns:
+            projectionType (str): The projection type of the camera
+        """
+        return self.__projectionType
+
+    @projectionType.setter
+    def projectionType(self, projectionType: str) -> None:
+        """
+          This method sets the projection type of the camera
+
+          Parameters:
+            projectionType (str): The projection type of the camera
+        """
+        if type(projectionType).__name__ == "str" and (projectionType == "parallel" or projectionType == "perspective"):
+            self.__projectionType = projectionType
+        else:
+            raise TypeError(
+                "projectionType must be a str, but is {}".format(type(projectionType)))
+
+    @property
+    def srcMatrix(self) -> list | None:
+        """
+          This method returns the transformation matrix from SRU to SRC
+
+          Returns:
+            srcMatrix (list): The transformation matrix from SRU to SRC
+        """
+        return self.__srcMatrix
+
+    @srcMatrix.setter
+    def srcMatrix(self, srcMatrix: list) -> None:
+        """
+          This method sets the transformation matrix from SRU to SRC
+
+          Parameters:
+            srcMatrix (list): The transformation matrix from SRU to SRC
+        """
+        if type(srcMatrix).__name__ == "list" or srcMatrix == None:
+            self.__srcMatrix = srcMatrix
+        else:
+            raise TypeError(
+                "srcMatrix must be a list, but is {}".format(type(srcMatrix)))
+
+    @property
+    def projectionMatrix(self) -> list | None:
         """
           This method returns the projection matrix
 
           Returns:
             projectionMatrix (list): The projection matrix
         """
-        return self.projectionMatrix
+        return self.__projectionMatrix
 
-    def getMjpMatrix(self) -> list:
+    @projectionMatrix.setter
+    def projectionMatrix(self, projectionMatrix: list) -> None:
         """
-          This method returns the Mjp matrix used to convert from SRC objects to STR objects
+          This method sets the projection matrix
+
+          Parameters:
+            projectionMatrix (list): The projection matrix
+        """
+        if type(projectionMatrix).__name__ == "list" or projectionMatrix == None:
+            self.__projectionMatrix = projectionMatrix
+        else:
+            raise TypeError(
+                "projectionMatrix must be a list, but is {}".format(type(projectionMatrix)))
+
+    @property
+    def MjpMatrix(self) -> list | None:
+        """
+          This method returns the transformation matrix from SRC to STR
 
           Returns:
-            MjpMatrix (list): The Mjp matrix
+            MjpMatrix (list): The transformation matrix from SRC to STR
         """
-        return self.MjpMatrix
+        return self.__MjpMatrix
 
-    def setVRP(self, vrp: Vertex) -> None:
+    @MjpMatrix.setter
+    def MjpMatrix(self, MjpMatrix: list) -> None:
         """
-          This method sets the VRP
-
-          Parameters:
-            vrp (Vertex): The VRP
-        """
-        self.vrp = vrp
-        self.defineSRCMatrix()
-        self.defineProjectionMatrix()
-
-    def setFocalPoint(self, p: Vertex) -> None:
-        """
-          This method sets the focal point
+          This method sets the transformation matrix from SRC to STR
 
           Parameters:
-            p (Vertex): The focal point
+            MjpMatrix (list): The transformation matrix from SRC to STR
         """
-        self.p = p
-        self.defineSRCMatrix()
-        self.defineProjectionMatrix()
+        if type(MjpMatrix).__name__ == "list" or MjpMatrix == None:
+            self.__MjpMatrix = MjpMatrix
+        else:
+            raise TypeError(
+                "MjpMatrix must be a list, but is {}".format(type(MjpMatrix)))
 
-    def setDistance(self, d: float) -> None:
+    @property
+    def MSruSrtMatrix(self) -> list | None:
         """
-          This method sets the distance
-
-          Parameters:
-            d (float): The distance
-        """
-        self.d = d
-        self.defineProjectionMatrix()
-
-    def setViewPort(self, viewPort: List[float, float]) -> None:
-        """
-          This method sets the viewport
-
-          Parameters:
-            viewPort (list): The viewport
-        """
-        self.viewPort = viewPort
-
-    def setWindow(self, window: List[float, float]) -> None:
-        """
-          This method sets the window
-
-          Parameters:
-            window (list): The window
-        """
-        self.window = window
-
-    def setProjectionType(self, projectionType: 'parallel' | 'perspective' = 'parallel') -> None:
-        """
-          This method sets the projection type
-
-          Parameters:
-            projectionType (str): The projection type
-        """
-        self.projectionType = projectionType
-        self.defineProjectionMatrix()
-
-    def defineSRCMatrix(self) -> None:
-        """
-          This method defines the SRC matrix
+          This method returns the transformation matrix from SRU to STR
 
           Returns:
-            This method don't return anything, but it defines the matrix to convert from SRU to SRC
+            MSruSrtMatrix (list): The transformation matrix from SRU to STR
+        """
+        return self.__MSruSrtMatrix
+
+    @MSruSrtMatrix.setter
+    def MSruSrtMatrix(self, MSruSrtMatrix: list) -> None:
+        """
+          This method sets the transformation matrix from SRU to STR
+
+          Parameters:
+            MSruSrtMatrix (list): The transformation matrix from SRU to STR
+        """
+        if isinstance(MSruSrtMatrix, list) or MSruSrtMatrix is None:
+            self.__MSruSrtMatrix = MSruSrtMatrix
+        else:
+            raise TypeError(
+                "MSruSrtMatrix must be a list, but is {}".format(type(MSruSrtMatrix)))
+
+    def calculateMatrices(self) -> None:
+        """
+          This method calculates the transformation matrix from SRU to SRC, the projection matrix and the transformation matrix from SRC to STR
         """
 
-        self.srcMatrix = pipeline.transformSRUtoSRC(self.vrp, self.p)
-
-    def defineProjectionMatrix(self) -> None:
-        """
-          This method defines the projection matrix
-
-          Returns:
-            This method don't return anything, but it defines the projection matrix
-        """
-        self.projectionMatrix = pipeline.projectionMatrix(
+        # Define the pipeline matrices
+        self.srcMatrix = pipeline.calculateSrcMatrix(
+            self.vrp, self.p)
+        self.projectionMatrix = pipeline.calculateProjectionMatrix(
             self.vrp, self.p, self.d, self.projectionType)
+        self.MjpMatrix = pipeline.calculateMjpMatrix(
+            [self.window[0], self.window[1]], [self.window[2], self.window[3]], [self.viewPort[0], self.viewPort[1]], [self.viewPort[2], self.viewPort[3]])
 
-    def defineMjpMatrix(self) -> None:
-        """
-          This method defines the Mjp matrix used to convert from SRC objects to STR objects
-
-          Returns:
-            This method don't return anything, but it defines the matrix to convert from SRC to STR
-        """
-        self.MjpMatrix = pipeline.transformSRCtoSRT(self.viewPort, self.window)
+        # Calculate the transformation matrix from SRU to STR
+        # Note that the order of the matrix multiplication is important
+        # in this case the order is: MjpMatrix * projectionMatrix * srcMatrix
+        # this is because the matrix multiplication is not commutative
+        self.MSruSrtMatrix = matrixMultiplication(
+            self.MjpMatrix, self.projectionMatrix)
+        self.MSruSrtMatrix = matrixMultiplication(
+            self.MSruSrtMatrix, self.srcMatrix)

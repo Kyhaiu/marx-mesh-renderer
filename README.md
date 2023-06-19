@@ -3,9 +3,11 @@
 ![Communism Image](https://mir-s3-cdn-cf.behance.net/project_modules/fs/e59dc021326689.562ff7831c9bf.jpg)
 
 ## Description
+
 The **marx-mesh-renderer** is an ambitious project that aims to develop a powerful 3D letter rendering engine from scratch. Inspired by the ideology of Marx and the principles of communism, this project leverages advanced mesh-based rendering techniques to bring hand-modeled letters to life in a dynamic and visually captivating manner.
 
 ## Key Features
+
 - **Mesh-Based Rendering:** Utilizes cutting-edge mesh-based rendering algorithms to generate realistic and visually appealing 3D representations of letters.
 - **Hand-Modeled Letters:** Showcases the artistry of hand-modeled letters, ensuring unique and intricate designs for each character.
 - **Real-Time Rendering:** Enables real-time rendering of the letters, allowing for interactive exploration and manipulation.

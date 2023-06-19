@@ -1,13 +1,19 @@
-from objects.test import VERT_A, VERT_B, VERT_C, VERT_D, VERT_E
+from models.scene import Scene
+from objects.char_0 import zero
+from objects.pyramid import pyramid
 from view import gui as win
+import sys
 
 
 def main():
     root = win.tk.Tk()
     window = win.GUI(500, 500, root)
 
-    vertices = [VERT_A, VERT_B, VERT_C, VERT_D, VERT_E]
-    window.plot_stuffs_on_canvas("frontal", None, vertices)
+    scene = Scene()
+
+    scene.addObject(pyramid)
+
+    window.make_scene(scene)
 
     root.mainloop()
 

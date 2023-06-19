@@ -5,26 +5,28 @@ from models.vertex import Vertex
 
 
 @staticmethod
-def vectorModule(vertex: Vertex):
+def vectorModule(vertex: Vertex) -> float | int:
+    """
+    This method calculate the module of a vector
+
+    :param vertex: The vector
+
+    :return: The module of the vector
+    """
     return math.sqrt(math.pow(vertex.x, 2) + math.pow(vertex.y, 2) + math.pow(vertex.z, 2))
 
 
 @staticmethod
-def dotProduct(vertex1: Vertex, vertex2: Vertex | float) -> Vertex | float:
+def dotProduct(vertex1: Vertex, vertex2: Vertex | float | int) -> Vertex | float | int:
     """
-      This method calculate the dot product between two vectors
-      ---
+    This method calculate the dot product between two vectors
 
-      Parameters:
-        vertex1 (Vertex): The first vector
-        vertex2 (Vertex | float): The second vector/scalar
+    :param vertex1: The first vector
+    :param vertex2: The second vector or a scalar
 
-      Returns:
-        Vertex | float: The result of the dot product.
+    :return: The result of the dot product
 
-        If the second parameter is a vector, the result is a scalar
-        otherwise, the result is a vector, because the dot product
-        between a vector and a scalar is a vector
+    :note: If one of the vectors is a scalar, the result will be a vector
     """
     if isinstance(vertex2, float) or isinstance(vertex2, int):
         return Vertex(vertex1.x * vertex2, vertex1.y * vertex2, vertex1.z * vertex2)
@@ -35,7 +37,15 @@ def dotProduct(vertex1: Vertex, vertex2: Vertex | float) -> Vertex | float:
 
 
 @staticmethod
-def dotVector(vertex1: Vertex, vertex2: Vertex):
+def dotVector(vertex1: Vertex, vertex2: Vertex) -> float | int:
+    """
+    This method calculate the dot product between two vectors
+
+    :param vertex1: The first vector
+    :param vertex2: The second vector
+
+    :return: The result of the dot product
+    """
     return vertex1.x * vertex2.x + vertex1.y * vertex2.y + vertex1.z * vertex2.z
 
 
@@ -45,17 +55,46 @@ def normalizeVector(vertex: Vertex, module: float):
 
 
 @staticmethod
-def matrixMultiplication(matrix1: list, matrix2: list):
-    return np.matmul(matrix1, matrix2)
+def matrixMultiplication(matrix1: list, matrix2: list) -> list:
+    """
+    This method multiply two matrix
+
+    :param matrix1(list): The first matrix
+    :param matrix2(list): The second matrix
+
+    :return: The result of the multiplication
+    """
+    if type(matrix1) is None:
+        raise TypeError("matrix1 must be a list, but is NoneType")
+    elif type(matrix2) is None:
+        raise TypeError("matrix2 must be a list, but is NoneType")
+
+    return np.matmul(matrix1, matrix2).tolist()
 
 
 @staticmethod
-def normalVector(vertex1: Vertex, vertex2: Vertex):
+def normalVector(vertex1: Vertex, vertex2: Vertex) -> Vertex:
+    """
+    This method calculate the normal vector of two vectors
+
+    :param vertex1: The first vector
+    :param vertex2: The second vector
+
+    :return: The normal vector
+    """
     return Vertex(vertex2.x - vertex1.x, vertex2.y - vertex1.y, vertex2.z - vertex1.z)
 
 
 @staticmethod
-def crossProduct(vertex1: Vertex, vertex2: Vertex):
+def crossProduct(vertex1: Vertex, vertex2: Vertex) -> Vertex:
+    """
+    This method calculate the cross product between two vectors
+
+    :param vertex1: The first vector
+    :param vertex2: The second vector
+
+    :return: The result of the cross product
+    """
     return Vertex(
         vertex1.y * vertex2.z - vertex1.z * vertex2.y,
         vertex1.z * vertex2.x - vertex1.x * vertex2.z,
@@ -64,5 +103,13 @@ def crossProduct(vertex1: Vertex, vertex2: Vertex):
 
 
 @staticmethod
-def vectorsDistance(vertex1: Vertex, vertex2: Vertex):
+def vectorsDistance(vertex1: Vertex, vertex2: Vertex) -> float | int:
+    """
+    This method calculate the distance between two vectors
+
+    :param vertex1: The first vector
+    :param vertex2: The second vector
+
+    :return: The distance between the two vectors
+    """
     return math.sqrt(math.pow(vertex2.x - vertex1.x, 2) + math.pow(vertex2.y - vertex1.y, 2) + math.pow(vertex2.z - vertex1.z, 2))
