@@ -1,4 +1,3 @@
-import logging
 import math
 from models.face import Face
 from models.halfedge import HalfEdge
@@ -18,6 +17,8 @@ class Object:
 
         self.vertexes_object, self.half_edges, self.face_objects = self.create_mesh(
             vertices, faces)
+
+        self.geometric_center: Vertex = None
 
     @property
     def vertexes_object(self) -> list[Vertex]:
@@ -141,6 +142,35 @@ class Object:
             vertex.z = float(matrix_result[2][0])
             vertex.h = float(matrix_result[3][0])
 
+    def define_geometric_center(self, view_name: str) -> None:
+        """
+        Defines the geometric center of object (in screen coordinates)
+
+        :return: None
+        """
+        sum_x = 0
+        sum_y = 0
+        sum_z = 0
+
+        if view_name == 'top':
+            for vertices in self.vertexes_object:
+                sum_x += vertices.x_top
+                sum_y += vertices.y_top
+                sum_z += vertices.z_top
+        elif view_name == 'side':
+            for vertices in self.vertexes_object:
+                sum_x += vertices.x_side
+                sum_y += vertices.y_side
+                sum_z += vertices.z_side
+        else:
+            for vertices in self.vertexes_object:
+                sum_x += vertices.x_front
+                sum_y += vertices.y_front
+                sum_z += vertices.z_front
+
+        n = len(self.vertexes_object)
+        self.geometric_center = Vertex(sum_x/n, sum_y/n, sum_z/n)
+
     def _rotate(self, angle: float, axis: str) -> None:
         """
         Rotates the object itself
@@ -222,3 +252,44 @@ class Object:
         ]
 
         self.apply_transformation(matrix)
+
+    import math
+
+
+def _euler_angles_from_rotation_matrix(matrix: list[list[float]]) -> tuple[float, float, float]:
+    """
+    Extracts Euler angles (roll, pitch, yaw) from a 3x3 rotation matrix.
+
+    :param matrix: The 3x3 rotation matrix.
+
+    :return: A tuple containing the Euler angles (roll, pitch, yaw) in radians.
+    """
+    # Check if the matrix is a valid rotation matrix
+    if len(matrix) != 3 or len(matrix[0]) != 3 or len(matrix[1]) != 3 or len(matrix[2]) != 3:
+        raise ValueError(
+            "Invalid rotation matrix: The matrix should be a 3x3 matrix.")
+
+    # Extract individual elements from the rotation matrix
+    r11, r12, r13 = matrix[0]
+    r21, r22, r23 = matrix[1]
+    r31, r32, r33 = matrix[2]
+
+    # Calculate the pitch angle (rotation around Y-axis)
+    pitch = math.atan2(-r31, math.sqrt(r11*r11 + r21*r21))
+
+    # Special case: pitch angle is +90 or -90 degrees (singularity)
+    if abs(pitch - math.pi/2) < 1e-6:
+        roll = 0
+        # Calculate the yaw angle (rotation around Z-axis)
+        yaw = math.atan2(r12, r22)
+    elif abs(pitch + math.pi/2) < 1e-6:
+        roll = 0
+        # Calculate the yaw angle (rotation around Z-axis)
+        yaw = math.atan2(-r12, -r22)
+    else:
+        # Calculate the roll angle (rotation around X-axis)
+        roll = math.atan2(r21, r11)
+        # Calculate the yaw angle (rotation around Z-axis)
+        yaw = math.atan2(r32, r33)
+
+    return roll, pitch, yaw

@@ -2,30 +2,56 @@ from models.vertex import Vertex
 from models.object import Object
 
 # The model of M
-VERTEX_0 = Vertex(x=164, y=149, z=1, id=0)
-VERTEX_1 = Vertex(x=133, y=149, z=1, id=1)
-VERTEX_2 = Vertex(x=102, y=149, z=1, id=2)
-VERTEX_3 = Vertex(x=71, y=149, z=1, id=3)
-VERTEX_4 = Vertex(x=40, y=149, z=1, id=4)
-VERTEX_5 = Vertex(x=9, y=149, z=1, id=5)
-VERTEX_6 = Vertex(x=133, y=40, z=1, id=6)
-VERTEX_7 = Vertex(x=102, y=40, z=1, id=7)
-VERTEX_8 = Vertex(x=71, y=40, z=1, id=8)
-VERTEX_9 = Vertex(x=40, y=40, z=1, id=9)
-VERTEX_10 = Vertex(x=164, y=27, z=1, id=10)
-VERTEX_11 = Vertex(x=147, y=9, z=1, id=11)
-VERTEX_12 = Vertex(x=9, y=9, z=1, id=12)
+VERTEX_1 = Vertex(x=1.0, y=1.0, z=-0.5, id=0)
+VERTEX_2 = Vertex(x=1.8903225806451613, y=1.0, z=-0.5, id=1)
+VERTEX_3 = Vertex(x=2.0, y=1.1285714285714286, z=-0.5, id=2)
+VERTEX_4 = Vertex(x=1.2, y=1.2214285714285715, z=-0.5, id=3)
+VERTEX_5 = Vertex(x=1.4, y=1.2214285714285715, z=-0.5, id=4)
+VERTEX_6 = Vertex(x=1.6, y=1.2214285714285715, z=-0.5, id=5)
+VERTEX_7 = Vertex(x=1.8, y=1.2214285714285715, z=-0.5, id=6)
+VERTEX_8 = Vertex(x=1.0, y=2.0, z=-0.5, id=7)
+VERTEX_9 = Vertex(x=1.2, y=2.0, z=-0.5, id=8)
+VERTEX_10 = Vertex(x=1.4, y=2.0, z=-0.5, id=9)
+VERTEX_11 = Vertex(x=1.6, y=2.0, z=-0.5, id=10)
+VERTEX_12 = Vertex(x=1.8, y=2.0, z=-0.5, id=11)
+VERTEX_13 = Vertex(x=2.0, y=2.0, z=-0.5, id=12)
+VERTEX_14 = Vertex(x=-1.0, y=0.0, z=0.5, id=13)
+VERTEX_15 = Vertex(x=-0.10967741935483866, y=0.0, z=0.5, id=14)
+VERTEX_16 = Vertex(x=0.0, y=0.12857142857142856, z=0.5, id=15)
+VERTEX_17 = Vertex(x=-0.8, y=0.22142857142857142, z=0.5, id=16)
+VERTEX_18 = Vertex(x=-0.6, y=0.22142857142857142, z=0.5, id=17)
+VERTEX_19 = Vertex(x=-0.4, y=0.22142857142857142, z=0.5, id=18)
+VERTEX_20 = Vertex(x=-0.19999999999999996, y=0.22142857142857142, z=0.5, id=19)
+VERTEX_21 = Vertex(x=-1.0, y=1.0, z=0.5, id=20)
+VERTEX_22 = Vertex(x=-0.8, y=1.0, z=0.5, id=21)
+VERTEX_23 = Vertex(x=-0.6, y=1.0, z=0.5, id=22)
+VERTEX_24 = Vertex(x=-0.4, y=1.0, z=0.5, id=23)
+VERTEX_25 = Vertex(x=-0.19999999999999996, y=1.0, z=0.5, id=24)
+VERTEX_26 = Vertex(x=0.0, y=1.0, z=0.5, id=25)
 
-# v 164 149 0
-# v 133 149 0
-# v 102 149 0
-# v 71 149 0
-# v 40 149 0
-# v 9 149 0
-# v 133 40 0
-# v 102 40 0
-# v 71 40 0
-# v 40 40 0
-# v 164 27 0
-# v 147 9 0
-# v 9 9 0
+# v 1.0 1.0 -0.5
+# v 1.8903225806451613 1.0 -0.5
+# v 2.0 1.1285714285714286 -0.5
+# v 1.2 1.2214285714285715 -0.5
+# v 1.4 1.2214285714285715 -0.5
+# v 1.6 1.2214285714285715 -0.5
+# v 1.8 1.2214285714285715 -0.5
+# v 1.0 2.0 -0.5
+# v 1.2 2.0 -0.5
+# v 1.4 2.0 -0.5
+# v 1.6 2.0 -0.5
+# v 1.8 2.0 -0.5
+# v 2.0 2.0 -0.5
+# v -1.0 0.0 0.5
+# v -0.10967741935483866 0.0 0.5
+# v 0.0 0.12857142857142856 0.5
+# v -0.8 0.22142857142857142 0.5
+# v -0.6 0.22142857142857142 0.5
+# v -0.4 0.22142857142857142 0.5
+# v -0.19999999999999996 0.22142857142857142 0.5
+# v -1.0 1.0 0.5
+# v -0.8 1.0 0.5
+# v -0.6 1.0 0.5
+# v -0.4 1.0 0.5
+# v -0.19999999999999996 1.0 0.5
+# v 0.0 1.0 0.5

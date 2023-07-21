@@ -8,12 +8,12 @@ class Camera:
 
     def __init__(
         self,
-        vrp: Vertex = Vertex(50, 15, 30),
-        p: Vertex = Vertex(20, 6, 15),
-        d: float | int = 17,
-        viewPort: List[float] = [0, 320, 0, 240],
-        window: List[float] = [-8, 8, -5, 5],
-        projectionType: str = 'parallel',
+        vrp: Vertex = Vertex(0, 0, 10),
+        p: Vertex = Vertex(0, 0, -2),
+        d: float | int = 20,
+        viewPort: List[float] = [0, 225, 0, 225],
+        window: List[float] = [-3, 3, -3, 3],
+        projectionType: str = 'perspective',
     ):
         """
           This method initialize the camera
@@ -231,7 +231,10 @@ class Camera:
           Parameters:
             projectionType (str): The projection type of the camera
         """
-        if type(projectionType).__name__ == "str" and (projectionType == "parallel" or projectionType == "perspective"):
+        if type(projectionType).__name__ == "str" and (
+            projectionType == "frontal" or projectionType == "top" or
+            projectionType == "side" or projectionType == "perspective"
+        ):
             self.__projectionType = projectionType
         else:
             raise TypeError(
@@ -340,7 +343,7 @@ class Camera:
 
         # Define the pipeline matrices
         self.srcMatrix = pipeline.calculateSrcMatrix(
-            self.vrp, self.p)
+            self.vrp, self.p, self.projectionType)
         self.projectionMatrix = pipeline.calculateProjectionMatrix(
             self.vrp, self.p, self.d, self.projectionType)
         self.MjpMatrix = pipeline.calculateMjpMatrix(

@@ -10,6 +10,7 @@ class Face:
         self.vertices = None
         self.visible = visible
         self.id = id
+        self.centroid = None
 
     def __repr__(self) -> str:
         repr = "Face(\n"
@@ -47,6 +48,21 @@ class Face:
     def vertices(self, vertices: list['Vertex']):
         if (type(vertices).__name__ == "list" and len(vertices) >= 3) or vertices is None:
             self.__vertices = vertices
+
+            # Calculate the centroid of the face
+            # using the follow formula:
+            # (x1 + x2 + x3 + ... + xn) / n
+            if vertices is not None:
+                x = 0
+                y = 0
+                z = 0
+                for vertex in vertices:
+                    x += vertex.x
+                    y += vertex.y
+                    z += vertex.z
+                self.centroid = Vertex(x / len(vertices),
+                                       y / len(vertices),
+                                       z / len(vertices))
         else:
             if len(vertices) < 3:
                 raise ValueError(
@@ -78,6 +94,18 @@ class Face:
         else:
             raise TypeError(
                 "id must be a str, int or None, but is {}".format(type(id)))
+
+    @property
+    def centroid(self) -> Vertex:
+        return self.__centroid
+
+    @centroid.setter
+    def centroid(self, centroid: Vertex):
+        if type(centroid).__name__ == "Vertex" or centroid is None:
+            self.__centroid = centroid
+        else:
+            raise TypeError(
+                "centroid must be a Vertex or None, but is {}".format(type(centroid)))
 
     def get_vertices(self) -> list['Vertex']:
         vertices = []
@@ -128,14 +156,14 @@ class Face:
         # Get the normal vector of the face
         normal = self.get_normal()
         # Get the vector from the camera to the face
-        camera_to_face = Vertex(self.vertices[0].x - camera.x, self.vertices[0].y - camera.y,
-                                self.vertices[0].z - camera.z)
+        camera_to_face = Vertex(self.centroid.x - camera.x, self.centroid.y - camera.y,
+                                self.centroid.z - camera.z)
 
         # Get the module of the vector
         camera_to_face_module = vectorModule(camera_to_face)
         # Normalize the vector
         camera_to_face = normalizeVector(camera_to_face, camera_to_face_module)
 
-        # Check if the dot product between the normal vector and the vector from the camera to the face is negative
+        # Check if the dot product between the normal vector and the vector from the camera to the face is positive
         # If it is, the face is visible to the camera
         self.visible = dotProduct(normal, camera_to_face) > 0
