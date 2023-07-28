@@ -1,65 +1,53 @@
 from models.vertex import Vertex
-from models.object import Object
 
 # The model of 9
-VERTEX_1 = Vertex(x=1.0, y=1.0, z=-0.5, id=0)
-VERTEX_2 = Vertex(x=2.0, y=1.0, z=-0.5, id=1)
-VERTEX_3 = Vertex(x=1.3333333333333333, y=1.2214285714285715, z=-0.5, id=2)
-VERTEX_4 = Vertex(x=1.6666666666666665, y=1.2214285714285715, z=-0.5, id=3)
-VERTEX_5 = Vertex(x=1.3333333333333333, y=1.4428571428571428, z=-0.5, id=4)
-VERTEX_6 = Vertex(x=1.6666666666666665, y=1.4428571428571428, z=-0.5, id=5)
-VERTEX_7 = Vertex(x=1.0, y=1.6642857142857141, z=-0.5, id=6)
-VERTEX_8 = Vertex(x=1.6666666666666665, y=1.6642857142857141, z=-0.5, id=7)
-VERTEX_9 = Vertex(x=1.6666666666666665, y=1.9928571428571429, z=-0.5, id=8)
-VERTEX_10 = Vertex(x=2.0, y=2.0, z=-0.5, id=9)
-VERTEX_11 = Vertex(x=-1.0, y=0.0, z=0.5, id=10)
-VERTEX_12 = Vertex(x=0.0, y=0.0, z=0.5, id=11)
-VERTEX_13 = Vertex(x=-0.6666666666666667, y=0.22142857142857142, z=0.5, id=12)
-VERTEX_14 = Vertex(x=-0.33333333333333337, y=0.22142857142857142, z=0.5, id=13)
-VERTEX_15 = Vertex(x=-0.6666666666666667, y=0.44285714285714284, z=0.5, id=14)
-VERTEX_16 = Vertex(x=-0.33333333333333337, y=0.44285714285714284, z=0.5, id=15)
-VERTEX_17 = Vertex(x=-1.0, y=0.6642857142857143, z=0.5, id=16)
-VERTEX_18 = Vertex(x=-0.33333333333333337, y=0.6642857142857143, z=0.5, id=17)
-VERTEX_19 = Vertex(x=-0.33333333333333337, y=0.9928571428571429, z=0.5, id=18)
-VERTEX_20 = Vertex(x=0.0, y=1.0, z=0.5, id=19)
+VERTEX_1 = Vertex(x=0.0, y=0.0, z=-0.5, id=0)
+VERTEX_2 = Vertex(x=1.0, y=0.0, z=-0.5, id=1)
+VERTEX_3 = Vertex(x=0.3333333333333333, y=0.22142857142857142, z=-0.5, id=2)
+VERTEX_4 = Vertex(x=0.6666666666666666, y=0.22142857142857142, z=-0.5, id=3)
+VERTEX_5 = Vertex(x=0.3333333333333333, y=0.44285714285714284, z=-0.5, id=4)
+VERTEX_6 = Vertex(x=0.6666666666666666, y=0.44285714285714284, z=-0.5, id=5)
+VERTEX_7 = Vertex(x=0.0, y=0.6642857142857143, z=-0.5, id=6)
+VERTEX_8 = Vertex(x=0.6666666666666666, y=0.6642857142857143, z=-0.5, id=7)
+VERTEX_9 = Vertex(x=0.6666666666666666, y=0.9928571428571429, z=-0.5, id=8)
+VERTEX_10 = Vertex(x=1.0, y=1.0, z=-0.5, id=9)
+VERTEX_11 = Vertex(x=0.0, y=0.0, z=0.5, id=10)
+VERTEX_12 = Vertex(x=1.0, y=0.0, z=0.5, id=11)
+VERTEX_13 = Vertex(x=0.3333333333333333, y=0.22142857142857142, z=0.5, id=12)
+VERTEX_14 = Vertex(x=0.6666666666666666, y=0.22142857142857142, z=0.5, id=13)
+VERTEX_15 = Vertex(x=0.3333333333333333, y=0.44285714285714284, z=0.5, id=14)
+VERTEX_16 = Vertex(x=0.6666666666666666, y=0.44285714285714284, z=0.5, id=15)
+VERTEX_17 = Vertex(x=0.0, y=0.6642857142857143, z=0.5, id=16)
+VERTEX_18 = Vertex(x=0.6666666666666666, y=0.6642857142857143, z=0.5, id=17)
+VERTEX_19 = Vertex(x=0.6666666666666666, y=0.9928571428571429, z=0.5, id=18)
+VERTEX_20 = Vertex(x=1.0, y=1.0, z=0.5, id=19)
 
-nine = Object(
-    vertices=[
-        VERTEX_1,
-        VERTEX_2,
-        VERTEX_3,
-        VERTEX_4,
-        VERTEX_5,
-        VERTEX_6,
-        VERTEX_7,
-        VERTEX_8,
-        VERTEX_9,
-        VERTEX_10,
-        VERTEX_11,
-        VERTEX_12,
-        VERTEX_13,
-        VERTEX_14,
-        VERTEX_15,
-        VERTEX_16,
-        VERTEX_17,
-        VERTEX_18,
-        VERTEX_19,
-        VERTEX_20,
-    ],
-    faces=[
-        # use the following command to generate the faces (subtract 1 from the indices)
-        [1, 9, 8, 7, 6, 0],
-        [3, 5, 4, 2],
-        [11, 10, 16, 17, 18, 19],
-        [13, 12, 14, 15],
-        [0, 6, 16, 10],
-        [0, 10, 11, 1],
-        [1, 11, 19, 9],
-        [9, 19, 18, 8],
-        [8, 18, 17, 7],
-        [7, 17, 16, 6],
-    ]
-)
+
+vertices = [
+    VERTEX_1,
+    VERTEX_2,
+    VERTEX_3,
+    VERTEX_4,
+    VERTEX_5,
+    VERTEX_6,
+    VERTEX_7,
+    VERTEX_8,
+    VERTEX_9,
+    VERTEX_10,
+    VERTEX_11,
+    VERTEX_12,
+    VERTEX_13,
+    VERTEX_14,
+    VERTEX_15,
+    VERTEX_16,
+    VERTEX_17,
+    VERTEX_18,
+    VERTEX_19,
+    VERTEX_20,
+]
+
+faces = [[10, 11, 19, 18, 17, 16, 10], [0, 6, 7, 8, 9, 1], [12, 13, 15, 14], [2, 4, 5, 3], [16, 6, 0, 10], [10, 0, 1, 11], [
+    11, 1, 9, 19], [19, 9, 8, 18], [18, 8, 7, 17], [17, 7, 6, 16], [14, 4, 2, 12], [12, 2, 3, 13], [13, 3, 5, 15], [15, 5, 4, 14]]
 
 # v 1.0 1.0 -0.5
 # v 2.0 1.0 -0.5

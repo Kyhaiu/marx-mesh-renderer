@@ -1,10 +1,17 @@
 import math
 import os
+import sys
 import tkinter as tk
+import pickle
+
+from tkinter import filedialog
+from tkinter import messagebox
+from tkinter import simpledialog
 from core.camera import Camera
 from models.object import Object
-
 from models.scene import Scene
+from utils.letter_selector import get_letter
+from PIL import Image, ImageTk
 
 
 class GUI:
@@ -280,6 +287,7 @@ class GUI:
 
         addIcon = tk.PhotoImage(file=os.path.join(iconPath, "add.png"))
         removeIcon = tk.PhotoImage(file=os.path.join(iconPath, "delete.png"))
+        clearIcon = tk.PhotoImage(file=os.path.join(iconPath, "reset.png"))
         saveIcon = tk.PhotoImage(file=os.path.join(iconPath, "export.png"))
         loadIcon = tk.PhotoImage(file=os.path.join(iconPath, "import.png"))
         moveIcon = tk.PhotoImage(file=os.path.join(iconPath, "move.png"))
@@ -299,36 +307,41 @@ class GUI:
                                image=loadIcon, command=self._load_scene)
         loadButton.grid(row=1, column=1)
 
+        clearButton = tk.Button(frame, text="Clear scene",
+                                image=clearIcon, command=self._clear_scene)
+        clearButton.grid(row=2, column=0)
+
         addButton = tk.Button(frame, text="Add text",
                               image=addIcon, command=self._add_object)
-        addButton.grid(row=2, column=0)
+        addButton.grid(row=3, column=0)
 
         removeButton = tk.Button(
             frame, text="Remove letter", image=removeIcon, command=self._remove_object)
-        removeButton.grid(row=2, column=1)
+        removeButton.grid(row=3, column=1)
 
         letters_actions_label = tk.Label(frame, text="Letters actions")
         letters_actions_label.grid(
-            row=3, column=0, columnspan=2, sticky="nsew")
+            row=4, column=0, columnspan=2, sticky="nsew")
 
         moveButton = tk.Button(frame, text="Move letter",
                                image=moveIcon, command=self._move_object)
-        moveButton.grid(row=4, column=0)
+        moveButton.grid(row=5, column=0)
 
         rotateButton = tk.Button(
             frame, text="rotate letter", image=rotateIcon, command=self._rotate_object)
-        rotateButton.grid(row=4, column=1)
+        rotateButton.grid(row=5, column=1)
 
         scaleButton = tk.Button(
             frame, text="Scale letter", image=scaleIcon, command=self._scale_object)
-        scaleButton.grid(row=5, column=0)
+        scaleButton.grid(row=6, column=0)
 
         shearButton = tk.Button(
             frame, text="Shear letter", image=shearIcon, command=self._shear_object)
-        shearButton.grid(row=5, column=1)
+        shearButton.grid(row=6, column=1)
 
         addButton.image = addIcon  # Retain a reference to the image
         removeButton.image = removeIcon
+        clearButton.image = clearIcon
         saveButton.image = saveIcon
         loadButton.image = loadIcon
         moveButton.image = moveIcon
@@ -340,6 +353,7 @@ class GUI:
 
         self.components.append(addButton)
         self.components.append(removeButton)
+        self.components.append(clearButton)
         self.components.append(saveButton)
         self.components.append(loadButton)
         self.components.append(moveButton)
@@ -408,14 +422,14 @@ class GUI:
         self.width_entry = tk.Entry(scene_settings_frame, width=5)
         self.width_entry.grid(row=5, column=1)
         self.width_entry.bind("<FocusOut>", self._on_entry_change)
-        self.width_entry.insert(0, self.scene.perspective_camera.viewPort[1])
+        self.width_entry.insert(0, self.scene.perspective_camera.window[1])
 
         height_label = tk.Label(scene_settings_frame, text="Height:")
         height_label.grid(row=5, column=2)
         self.height_entry = tk.Entry(scene_settings_frame, width=5)
         self.height_entry.grid(row=5, column=3)
         self.height_entry.bind("<FocusOut>", self._on_entry_change)
-        self.height_entry.insert(0, self.scene.perspective_camera.viewPort[3])
+        self.height_entry.insert(0, self.scene.perspective_camera.window[3])
 
         # Light settings
         ila_label = tk.Label(scene_settings_frame, text="Ambient Light")
@@ -505,7 +519,7 @@ class GUI:
         if scene is None:
 
             camera = Camera(
-                viewPort=[-self.width/2, self.width, -self.height/2, self.height/2])
+                viewPort=[-self.width/2, self.width/2, -self.height/2, self.height/2])
 
             self.scene = Scene(camera=camera, objects=[])
 
@@ -530,6 +544,7 @@ class GUI:
         if self.scene.objects.__len__() == 0:
             return
         selected_one = False
+        i = 1
         # iterate over all objects in scene
         for object in self.scene.objects:
 
@@ -540,6 +555,11 @@ class GUI:
 
             # get the faces of the object
             faces = object.face_objects
+
+            # if i == 1:
+            # print(faces[0].id)
+            # print(faces[0].half_edge.origin, faces[0].half_edge.prev.origin,
+            #       faces[0].half_edge.next.origin)
 
             he = None
             for face in faces:
@@ -553,7 +573,6 @@ class GUI:
                     self.side_canvas.create_line(he.origin.z_side, he.origin.y_side,
                                                  he.next.origin.z_side, he.next.origin.y_side, fill='red' if selected_one else color)
 
-                    # draw the vertex(dots)
                     self.frontal_canvas.create_oval(he.origin.x_front-size_dot, he.origin.y_front-size_dot,
                                                     he.origin.x_front+size_dot, he.origin.y_front+size_dot, fill=color)
 
@@ -562,11 +581,30 @@ class GUI:
 
                     self.side_canvas.create_oval(he.origin.z_side-size_dot, he.origin.y_side-size_dot,
                                                  he.origin.z_side+size_dot, he.origin.y_side+size_dot, fill=color)
+
                     he = he.next
                     if he == face.half_edge:
                         break
 
             if faces is not None:
+
+                # image_buffer = self.scene.image_buffer
+
+                # Convert the pixel values to a valid color
+                # Assuming pixel is a tuple of (R, G, B) values
+
+                # Example for a colored image (3 channels - R, G, B):
+                # for face in faces:
+                #     if not face.visible:
+                #         continue
+                #     self.scene.scanline_fill(self.frontal_canvas, face)
+                # for y, row in enumerate(image_buffer):
+                #     for x, pixel in enumerate(row):
+                #         color = f'#{pixel[0]:02x}{pixel[1]:02x}{pixel[2]:02x}'
+
+                #         self.perspective.create_rectangle(
+                #             x-10, y-10, x+10, y+10, fill=color)
+
                 # variable to iterate over the faces
                 he = None
 
@@ -580,16 +618,25 @@ class GUI:
 
                     # until the next half-edge is the first half-edge of the face
                     while True:
-                        # print('frontal: ', he.origin.x_front,
-                        #       he.origin.y_front, he.origin.z_front)
-                        # print('side: ', he.origin.x_side, he.origin.y_side, he.origin.z_top)
-                        # print('frontal: ', he.origin.x_front, he.origin.y_front, he.origin.z_front)
+
+                        print('Drawing edge: ' + str(he.origin.id) +
+                              ' -> ' + str(he.next.origin.id))
+                        print('Origin: ', he.origin)
+                        print('Next: ', he.next.origin)
 
                         self.perspective.create_line(he.origin.x_screen, he.origin.y_screen,
                                                      he.next.origin.x_screen, he.next.origin.y_screen, fill=color)
 
-                        self.perspective.create_oval(he.origin.x_screen-size_dot, he.origin.y_screen-size_dot,
-                                                     he.origin.x_screen+size_dot, he.origin.y_screen+size_dot, fill=color)
+                        center_x = (he.origin.x_screen-size_dot +
+                                    he.origin.x_screen+size_dot) / 2
+                        center_y = (he.origin.y_screen-size_dot +
+                                    he.origin.y_screen+size_dot) / 2
+
+                        # self.perspective.create_oval(he.origin.x_screen-size_dot, he.origin.y_screen-size_dot,
+                        #                              he.origin.x_screen+size_dot, he.origin.y_screen+size_dot, fill=color)
+
+                        self.perspective.create_text(
+                            center_x, center_y, text=he.origin.id, fill='red')
 
                         # iterate(counter clockwise) over the half-edge
                         he = he.next
@@ -617,7 +664,7 @@ class GUI:
 
         # The deselection of the object is done in the redraw method
         if self.scene.selected_object is not None:
-            # if this heappens, the object was selected
+            # if this happens, the object was selected
             # then we need to define the geometric center of the object
             self.__selected_object_canvas.define_geometric_center('frontal')
 
@@ -627,6 +674,7 @@ class GUI:
             self._offset_x = x - self.__selected_object_canvas.geometric_center.x_front
             self._offset_y = y - self.__selected_object_canvas.geometric_center.y_front
 
+            # if self._offset_x > 10:
             self._dragging = True
 
     def _mouse_click_top_view(self, event: tk.Event) -> None:
@@ -739,13 +787,40 @@ class GUI:
                     if he == face.half_edge:
                         break
 
+    def _clear_scene(self) -> None:
+        """
+        This method clears the scene
+
+        :return: None
+        """
+        self.scene.clear()
+
+        self._update_canvas()
+
     def _save_scene(self) -> None:
         '''
         This method is called when the user clicks on the save scene button
 
         :return: None
         '''
-        print('saving scene')
+        data = {
+            'scene': self.scene,
+        }
+
+        file_directory = filedialog.askdirectory()
+
+        if file_directory:
+            file_name = filedialog.asksaveasfilename(
+                initialdir=file_directory, title="Select file", filetypes=(("MRX files", "*.mrx"), ("All Files", "*.*")))
+            if file_name:
+                with open(file_name, 'wb') as file:
+                    try:
+                        pickle.dump(data, file)
+                        messagebox.showinfo(
+                            title="Success", message="The file was saved successfully")
+                    except:
+                        messagebox.showerror(
+                            title="Error", message="An error occurred while saving the file")
 
     def _load_scene(self) -> None:
         '''
@@ -753,7 +828,33 @@ class GUI:
 
         :return: None
         '''
-        print('loading scene')
+        file_directory = filedialog.askopenfilename()
+
+        # validate if the file is a pickle file
+        if file_directory.endswith('.mrx'):
+            with open(file_directory, 'rb') as file:
+                data = pickle.load(file)
+                self.scene.clear()
+                self._update_canvas()
+                self.make_scene(data['scene'])
+        else:
+            # open a error window
+            messagebox.showerror(
+                title="Error", message="The file is not a pickle file")
+
+    def on_validate_input(self, user_input: str) -> None:
+        """
+        This method is called when the user inputs a value in the entry
+
+        :param user_input: The input of the user
+
+        :return: True if the input is valid, False otherwise
+        """
+        if len(user_input) <= 10:  # Limit the input to 10 characters
+            return True
+        else:
+            self.root.bell()  # Beep to indicate invalid input
+            return False
 
     def _add_object(self) -> None:
         '''
@@ -761,7 +862,23 @@ class GUI:
 
         :return: None
         '''
-        print('adding object')
+        user_input = simpledialog.askstring(
+            "Input", "Enter with your string (Max 5 characters)")
+
+        if user_input is not None and user_input != '' and len(user_input) < 5:
+            # for each char in the input string add the corresponding object
+
+            for i, char in enumerate(user_input):
+                if i == len(user_input) - 1:
+                    self.scene.addObject(get_letter(char, True))
+                else:
+                    self.scene.addObject(get_letter(char, False))
+
+                self.draw_scene()
+        else:
+            if len(user_input) >= 5:
+                messagebox.showerror(
+                    title="Error", message="The string must have less than 5 characters")
 
     def _remove_object(self) -> None:
         '''
@@ -787,6 +904,10 @@ class GUI:
         '''
         self._operation_selected = 'rotate'
 
+        print('-'*50)
+
+        self._update_canvas()
+
     def _scale_object(self) -> None:
         '''
         This method is called when the user clicks on the scale object button
@@ -801,7 +922,7 @@ class GUI:
 
         :return: None
         '''
-        self._operation_selected = 'scale'
+        self._operation_selected = 'shear'
 
     def _update_canvas(self) -> None:
         '''
@@ -862,19 +983,19 @@ class GUI:
 
                 if self._clicked_canvas_name == 'frontal':
                     self._selected_object_canvas._rotate(
-                        delta_angle_1, 'y')
-                    self._selected_object_canvas._rotate(
-                        delta_angle_2, 'z')
+                        delta_angle_1, delta_angle_2, 'x', 'y')
+                    # self._selected_object_canvas._rotate(
+                    #     0.7854, 'y')
                 elif self._clicked_canvas_name == 'top':
                     self._selected_object_canvas._rotate(
-                        delta_angle_1, 'x')
-                    self._selected_object_canvas._rotate(
-                        delta_angle_2, 'z')
+                        delta_angle_1, delta_angle_2, 'x', 'z')
+                    # self._selected_object_canvas._rotate(
+                    #     0.7854, 'x')
+                    # self._selected_object_canvas._rotate(
+                    #     0.7854, 'z')
                 elif self._clicked_canvas_name == 'side':
                     self._selected_object_canvas._rotate(
-                        delta_angle_1, 'x')
-                    self._selected_object_canvas._rotate(
-                        delta_angle_2, 'y')
+                        delta_angle_1, delta_angle_2, 'z', 'y')
             elif self._operation_selected == 'scale':
                 scale_factor = 0.01  # Adjust this value to control the scaling speed
                 scale_x = 1 + scale_factor * delta_x
@@ -882,13 +1003,19 @@ class GUI:
 
                 if self._clicked_canvas_name == 'frontal':
                     self._selected_object_canvas._scale(
-                        scale_x, scale_y, 1)
+                        scale_x, scale_x, 1)
+                    self._selected_object_canvas._scale(
+                        scale_y, scale_y, 1)
                 elif self._clicked_canvas_name == 'top':
                     self._selected_object_canvas._scale(
-                        scale_x, 1, scale_y)
+                        scale_x, 1, scale_x)
+                    self._selected_object_canvas._scale(
+                        scale_y, 1, scale_y)
                 elif self._clicked_canvas_name == 'side':
                     self._selected_object_canvas._scale(
-                        1, scale_y, scale_x)
+                        1, scale_x, scale_x)
+                    self._selected_object_canvas._scale(
+                        1, scale_y, scale_y)
             elif self._operation_selected == 'shear':
                 shear_factor = 0.01
                 shear_x = shear_factor * delta_x
@@ -896,13 +1023,19 @@ class GUI:
 
                 if self._clicked_canvas_name == 'frontal':
                     self._selected_object_canvas._shear(
-                        shear_x, shear_y, 0)
+                        shear_x, shear_x, 0)
+                    self._selected_object_canvas._shear(
+                        shear_y, shear_y, 0)
                 elif self._clicked_canvas_name == 'top':
                     self._selected_object_canvas._shear(
-                        shear_x, 0, shear_y)
+                        shear_x, 0, shear_x)
+                    self._selected_object_canvas._shear(
+                        shear_y, 0, shear_y)
                 elif self._clicked_canvas_name == 'side':
                     self._selected_object_canvas._shear(
-                        0, shear_y, shear_x)
+                        0, shear_x, shear_x)
+                    self._selected_object_canvas._shear(
+                        0, shear_y, shear_y)
 
             self._click_x = x
             self._click_y = y
@@ -919,6 +1052,7 @@ class GUI:
         """
         if self._dragging:
             self._dragging = False
+        return
 
     def _on_entry_change(self, event: tk.Event) -> None:
         """
@@ -928,6 +1062,9 @@ class GUI:
 
         :return: None
         """
+        if sys.getrecursionlimit() < 1000:
+            return
+
         vrp_x = self.vrp_x.get()
         vrp_y = self.vrp_y.get()
         vrp_z = self.vrp_z.get()
@@ -935,9 +1072,6 @@ class GUI:
         focal_x = self.focal_x.get()
         focal_y = self.focal_y.get()
         focal_z = self.focal_z.get()
-
-        print(vrp_x, vrp_y, vrp_z)
-        print(focal_x, focal_y, focal_z)
 
         width = self.width_entry.get()
         height = self.height_entry.get()
@@ -969,11 +1103,12 @@ class GUI:
             self.scene.perspective_camera.p.z = float(focal_z)
 
         if width != '':
-            self.scene.perspective_camera.viewPort[0] = -float(width)
-            self.scene.perspective_camera.viewPort[1] = float(width)
+            self.scene.perspective_camera.window[0] = -float(width)
+            self.scene.perspective_camera.window[1] = float(width)
         if height != '':
-            self.scene.perspective_camera.viewPort[2] = -float(height)
-            self.scene.perspective_camera.viewPort[3] = float(height)
+            self.scene.perspective_camera.window[2] = -float(height)
+            self.scene.perspective_camera.window[3] = float(height)
 
         self.scene.perspective_camera.calculateMatrices()
         self._update_canvas()
+        return

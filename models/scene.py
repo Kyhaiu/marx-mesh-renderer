@@ -1,10 +1,13 @@
-import logging
 from core.camera import Camera
+from models.face import Face
+from models.halfedge import HalfEdge
 from models.object import Object
 from models.vertex import Vertex
-from utils.geometric_transformation import translation
 from utils.pipeline import normalize_by_homogeneous_coordinate
 from utils.vectors_operations import matrixMultiplication
+
+
+import tkinter as tk
 
 
 class Scene:
@@ -23,6 +26,13 @@ class Scene:
 
         self.objects = objects
         self.selected_object = None
+
+        # create a buffer image for perspective view with the size of the canvas
+        self.image_buffer = [[(255, 255, 0) for x in range(
+            abs(self.perspective_camera.viewPort[1]))] for y in range(abs(self.perspective_camera.viewPort[3]))]
+
+        self.color_buffer = [[(0, 0, 0) for x in range(
+            abs(self.perspective_camera.viewPort[1]))] for y in range(abs(self.perspective_camera.viewPort[3]))]
 
     def __str__(self) -> str:
         msg = "Scene(\n"
@@ -107,6 +117,30 @@ class Scene:
             raise TypeError(
                 "selected_object must be a Object, but is {}".format(type(selected_object)))
 
+    @ property
+    def image_buffer(self) -> list[list[int]]:
+        return self.__image_buffer
+
+    @ image_buffer.setter
+    def image_buffer(self, image_buffer: list[list[int]]):
+        if type(image_buffer).__name__ == "list":
+            self.__image_buffer = image_buffer
+        else:
+            raise TypeError(
+                "image_buffer must be a list, but is {}".format(type(image_buffer)))
+
+    @ property
+    def color_buffer(self) -> list[list[tuple]]:
+        return self.__color_buffer
+
+    @ color_buffer.setter
+    def color_buffer(self, color_buffer: list[list[tuple]]):
+        if type(color_buffer).__name__ == "list":
+            self.__color_buffer = color_buffer
+        else:
+            raise TypeError(
+                "color_buffer must be a list, but is {}".format(type(color_buffer)))
+
     def addObject(self, object: Object) -> None:
         """
         This method add a object to the scene
@@ -119,10 +153,10 @@ class Scene:
             raise TypeError(
                 "object must be a Object, but is {}".format(type(object)))
 
-        self._draw(object)
-
         # append the object to the list of objects
         self.__objects.append(object)
+
+        self._update_values(object)
 
     def removeObject(self, object_id: str) -> None:
         """
@@ -180,80 +214,6 @@ class Scene:
 
         if not found:
             raise ValueError("object with id {} not found".format(object_id))
-
-    def saveScene(self, file_path: str, file_name: str = 'letter to comrade.cmrd') -> None:
-        pass
-
-    def loadScene(self, file_path: str, file_name: str = 'letter to comrade.cmrd') -> None:
-        pass
-
-    def changeCameraSettings(self, param_name: str, param_value: float | int) -> None:
-        if type(param_name).__name__ != "str":
-            raise TypeError(
-                "param_name must be a str, but is {}".format(type(param_name)))
-        elif param_name == "":
-            raise ValueError("param_name must not be empty")
-        elif type(param_value).__name__ != "int" and type(param_value).__name__ != "float":
-            raise TypeError(
-                "param_value must be a int or float, but is {}".format(type(param_value)))
-        # the following elifs are for the camera settings
-
-        # TODO: add more camera settings. Like disable wire frames, color, shading, etc.
-        # TODO: add the debug message that contains info about the camera settings changed
-
-        # x, y, z are the coordinates of the camera (VRP)
-        # angle is the angle of the camera (VPN)
-        # fov is the field of view of the camera
-
-        # we don't make a 3D cut in this project so we don't need the near and far planes
-        # near is the near plane of the camera
-        # far is the far plane of the camera
-        if param_name == "x" or param_name == "y" or param_name == "z":
-            self.__perspective_camera.vrp = self.__perspective_camera.vrp._replace(
-                param_name=param_name, param_value=param_value)
-        elif param_name == "angle":
-            self.__perspective_camera.angle = param_value
-        elif param_name == "near":
-            self.__perspective_camera.near = param_value
-        elif param_name == "far":
-            self.__perspective_camera.far = param_value
-        else:
-            raise ValueError("param name {} not found".format(param_name))
-
-    def changeObjectSettings(self, object_id: str, param_name: str, param_value: float | int) -> None:
-
-        if type(object_id).__name__ != "str":
-            raise TypeError(
-                "object_id must be a str, but is {}".format(type(object_id)))
-        elif object_id == "":
-            raise ValueError("object_id must not be empty")
-        elif type(param_name).__name__ != "str":
-            raise TypeError(
-                "param_name must be a str, but is {}".format(type(param_name)))
-        elif param_name == "":
-            raise ValueError("param_name must not be empty")
-        elif type(param_value).__name__ != "int" and type(param_value).__name__ != "float":
-            raise TypeError(
-                "param_value must be a int or float, but is {}".format(type(param_value)))
-        else:
-            object_ref = self.getObject(object_id)
-
-            # TODO: add more object settings. Like disable wire frames, color, shading, etc.
-            # TODO: add the debug message that contains info about the object settings changed
-            if param_name == "rotation":
-                # apply rotation in the object
-                object_ref._rotate(param_value, 'y')
-            elif param_name == "translation":
-                # apply translation in the object
-                object_ref._translate(param_value, 'y')
-            elif param_name == "scale":
-                # apply scale in the object
-                object_ref._scale(param_value, 'y')
-            elif param_name == "shear":
-                # apply shear in the object
-                object_ref._shear(param_value, 'y')
-            else:
-                raise ValueError("param name {} not found".format(param_name))
 
     def select_object(self, x: int | float, y: int | float, canvas_name: str):
         """
@@ -328,11 +288,11 @@ class Scene:
             raise ValueError("selected_object is None")
 
         # apply the pipeline in the object
-        self._draw(self.selected_object)
+        self._update_values(self.selected_object)
 
-    def _draw(self, object: Object) -> None:
+    def _update_values(self, object: Object) -> None:
         """
-        This method draw the object
+        This method update the object values
 
         :param object(Object): The object to draw
 
@@ -390,6 +350,8 @@ class Scene:
         for face in object.face_objects:
             face.visibility_test(self.perspective_camera.vrp)
 
+        # self.scan_line()
+
     def update(self) -> None:
         """
         This method update the scene
@@ -399,4 +361,59 @@ class Scene:
 
         # apply the pipeline in the objects
         for object in self.objects:
-            self._draw(object)
+            self._update_values(object)
+
+    # def draw_scanline(self, canvas: tk.Canvas, x1: int, x2: int, y: int):
+    #     canvas.create_line(x1, y, x2, y)
+
+    # def get_edges_from_face(self, face: Face) -> list[HalfEdge]:
+    #     edges = []
+    #     current_edge = face.half_edge
+    #     while True:
+    #         edges.append(current_edge)
+    #         current_edge = current_edge.next
+    #         if current_edge == face.half_edge:
+    #             break
+    #     return edges
+
+    # def scanline_fill(self, canvas: tk.Canvas, face: Face):
+    #     edges = self.get_edges_from_face(face)
+
+    #     print(edges)
+
+    #     min_y = min(edge.origin.y for edge in edges)
+    #     max_y = max(edge.origin.y for edge in edges)
+
+    #     active_edges = []
+    #     for y in range(int(min_y), int(max_y) + 1):
+    #         # Add edges whose y-range covers the current scanline
+    #         for edge in edges:
+    #             if (edge.origin.y <= y < edge.twin.origin.y) or (edge.twin.origin.y <= y < edge.origin.y):
+    #                 active_edges.append(edge)
+
+    #         # Sort the active edges based on their x-coordinate
+    #         active_edges.sort(key=lambda edge: edge.origin.x)
+
+    #         # Fill the scanline using pairs of edges' x-coordinates
+    #         for i in range(0, len(active_edges), 2):
+    #             x1 = int(active_edges[i].origin.x)
+    #             x2 = int(active_edges[i + 1].origin.x)
+    #             self.draw_scanline(canvas, x1, x2, y)
+
+    #     # Remove edges whose y-range ends at the current scanline
+    #     active_edges = [
+    #         edge for edge in active_edges if edge.twin.origin.y != y]
+
+    def clear(self) -> None:
+        """
+        This method clear the scene
+
+        :return: None
+        """
+
+        # clear the objects
+        self.objects = []
+        self.selected_object = None
+
+        # clear the selected object
+        self.selected_object = None

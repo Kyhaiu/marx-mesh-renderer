@@ -51,7 +51,7 @@ def dotVector(vertex1: Vertex, vertex2: Vertex) -> float | int:
 
 @staticmethod
 def normalizeVector(vertex: Vertex, module: float):
-    return Vertex(vertex.x/module, vertex.y/module, vertex.z/module)
+    return Vertex(vertex.x/module if module != 0 else 1, vertex.y/module if module != 0 else 1, vertex.z/module if module != 0 else 1)
 
 
 @staticmethod

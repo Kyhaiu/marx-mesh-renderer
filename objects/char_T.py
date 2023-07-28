@@ -1,23 +1,67 @@
 from models.vertex import Vertex
-from models.object import Object
 
 # The model of T
-VERTEX_1 = Vertex(x=1.0, y=1.0, z=-0.5, id=0)
-VERTEX_2 = Vertex(x=2.0, y=1.0, z=-0.5, id=1)
-VERTEX_3 = Vertex(x=1.0, y=1.2214285714285715, z=-0.5, id=2)
-VERTEX_4 = Vertex(x=2.0, y=1.2214285714285715, z=-0.5, id=3)
-VERTEX_5 = Vertex(x=1.3333333333333333, y=1.2214285714285715, z=-0.5, id=4)
-VERTEX_6 = Vertex(x=1.6666666666666665, y=1.2214285714285715, z=-0.5, id=5)
-VERTEX_7 = Vertex(x=1.3333333333333333, y=2.0, z=-0.5, id=6)
-VERTEX_8 = Vertex(x=1.6666666666666665, y=2.0, z=-0.5, id=7)
-VERTEX_9 = Vertex(x=-1.0, y=0.0, z=0.5, id=8)
-VERTEX_10 = Vertex(x=0.0, y=0.0, z=0.5, id=9)
-VERTEX_11 = Vertex(x=-1.0, y=0.22142857142857142, z=0.5, id=10)
-VERTEX_12 = Vertex(x=0.0, y=0.22142857142857142, z=0.5, id=11)
-VERTEX_13 = Vertex(x=-0.6666666666666667, y=0.22142857142857142, z=0.5, id=12)
-VERTEX_14 = Vertex(x=-0.33333333333333337, y=0.22142857142857142, z=0.5, id=13)
-VERTEX_15 = Vertex(x=-0.6666666666666667, y=1.0, z=0.5, id=14)
-VERTEX_16 = Vertex(x=-0.33333333333333337, y=1.0, z=0.5, id=15)
+VERTEX_1 = Vertex(x=0.0, y=0.0, z=-0.5, id=0)
+VERTEX_2 = Vertex(x=1.0, y=0.0, z=-0.5, id=1)
+VERTEX_3 = Vertex(x=0.0, y=0.22142857142857142, z=-0.5, id=2)
+VERTEX_4 = Vertex(x=1.0, y=0.22142857142857142, z=-0.5, id=3)
+VERTEX_5 = Vertex(x=0.3333333333333333, y=0.22142857142857142, z=-0.5, id=4)
+VERTEX_6 = Vertex(x=0.6666666666666666, y=0.22142857142857142, z=-0.5, id=5)
+VERTEX_7 = Vertex(x=0.3333333333333333, y=1.0, z=-0.5, id=6)
+VERTEX_8 = Vertex(x=0.6666666666666666, y=1.0, z=-0.5, id=7)
+VERTEX_9 = Vertex(x=0.0, y=0.0, z=0.5, id=8)
+VERTEX_10 = Vertex(x=1.0, y=0.0, z=0.5, id=9)
+VERTEX_11 = Vertex(x=0.0, y=0.22142857142857142, z=0.5, id=10)
+VERTEX_12 = Vertex(x=1.0, y=0.22142857142857142, z=0.5, id=11)
+VERTEX_13 = Vertex(x=0.3333333333333333, y=0.22142857142857142, z=0.5, id=12)
+VERTEX_14 = Vertex(x=0.6666666666666666, y=0.22142857142857142, z=0.5, id=13)
+VERTEX_15 = Vertex(x=0.3333333333333333, y=1.0, z=0.5, id=14)
+VERTEX_16 = Vertex(x=0.6666666666666666, y=1.0, z=0.5, id=15)
+
+vertices = [
+    VERTEX_1,
+    VERTEX_2,
+    VERTEX_3,
+    VERTEX_4,
+    VERTEX_5,
+    VERTEX_6,
+    VERTEX_7,
+    VERTEX_8,
+    VERTEX_9,
+    VERTEX_10,
+    VERTEX_11,
+    VERTEX_12,
+    VERTEX_13,
+    VERTEX_14,
+    VERTEX_15,
+    VERTEX_16,
+]
+
+faces = [
+    [8, 9, 11, 13, 15, 14, 12, 10],
+    [0, 2, 4, 6, 7, 5, 3, 1],
+    [10, 2, 0, 8],
+    [8, 0, 1, 9],
+    [9, 1, 3, 11],
+    [11, 3, 5, 13],
+    [13, 5, 7, 15],
+    [15, 7, 6, 14],
+    [14, 6, 4, 12],
+    [12, 4, 2, 10],
+]
+
+# f 9 10 12 14 16 15 13 11
+# f 1 3 5 7 8 6 4 2
+
+# f 11 3 1 9
+# f 9 1 2 10
+# f 10 2 4 12
+# f 12 4 6 14
+# f 14 6 8 16
+# f 16 8 7 15
+# f 15 7 5 13
+# f 13 5 3 11
+
 
 # v 1.0 1.0 -0.5
 # v 2.0 1.0 -0.5

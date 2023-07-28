@@ -1,91 +1,76 @@
 from models.vertex import Vertex
 from models.object import Object
 
-# The model of K
-VERTEX_1 = Vertex(x=1.0, y=1.0, z=-0.5, id=0)
-VERTEX_2 = Vertex(x=1.3297872340425532, y=1.0, z=-0.5, id=1)
-VERTEX_3 = Vertex(x=1.6702127659574468, y=1.0, z=-0.5, id=2)
-VERTEX_4 = Vertex(x=2.0, y=1.0, z=-0.5, id=3)
-VERTEX_5 = Vertex(x=1.3404255319148937, y=1.45, z=-0.5, id=4)
-VERTEX_6 = Vertex(x=1.6595744680851063, y=1.45, z=-0.5, id=5)
-VERTEX_7 = Vertex(x=2.0, y=1.45, z=-0.5, id=6)
-VERTEX_8 = Vertex(x=1.8085106382978724, y=1.45, z=-0.5, id=7)
-VERTEX_9 = Vertex(x=2.0, y=1.5714285714285714, z=-0.5, id=8)
-VERTEX_10 = Vertex(x=1.3404255319148937, y=1.6714285714285713, z=-0.5, id=9)
-VERTEX_11 = Vertex(x=1.6595744680851063, y=1.6714285714285713, z=-0.5, id=10)
-VERTEX_12 = Vertex(x=1.0, y=2.0, z=-0.5, id=11)
-VERTEX_13 = Vertex(x=1.3297872340425532, y=2.0, z=-0.5, id=12)
-VERTEX_14 = Vertex(x=1.6702127659574468, y=2.0, z=-0.5, id=13)
-VERTEX_15 = Vertex(x=1.9893617021276597, y=2.0, z=-0.5, id=14)
-VERTEX_16 = Vertex(x=-1.0, y=0.0, z=0.5, id=15)
-VERTEX_17 = Vertex(x=-0.6702127659574468, y=0.0, z=0.5, id=16)
-VERTEX_18 = Vertex(x=-0.32978723404255317, y=0.0, z=0.5, id=17)
-VERTEX_19 = Vertex(x=0.0, y=0.0, z=0.5, id=18)
-VERTEX_20 = Vertex(x=-0.6595744680851063, y=0.45, z=0.5, id=19)
-VERTEX_21 = Vertex(x=-0.34042553191489366, y=0.45, z=0.5, id=20)
-VERTEX_22 = Vertex(x=0.0, y=0.45, z=0.5, id=21)
-VERTEX_23 = Vertex(x=-0.19148936170212771, y=0.45, z=0.5, id=22)
-VERTEX_24 = Vertex(x=0.0, y=0.5714285714285714, z=0.5, id=23)
-VERTEX_25 = Vertex(x=-0.6595744680851063, y=0.6714285714285714, z=0.5, id=24)
-VERTEX_26 = Vertex(x=-0.34042553191489366, y=0.6714285714285714, z=0.5, id=25)
-VERTEX_27 = Vertex(x=-1.0, y=1.0, z=0.5, id=26)
-VERTEX_28 = Vertex(x=-0.6702127659574468, y=1.0, z=0.5, id=27)
-VERTEX_29 = Vertex(x=-0.32978723404255317, y=1.0, z=0.5, id=28)
-VERTEX_30 = Vertex(x=-0.010638297872340385, y=1.0, z=0.5, id=29)
+# esta com problema na ligação dos vértices. Porém está correto no site
 
-K = Object(
-    vertices=[
-        VERTEX_1,
-        VERTEX_2,
-        VERTEX_3,
-        VERTEX_4,
-        VERTEX_5,
-        VERTEX_6,
-        VERTEX_7,
-        VERTEX_8,
-        VERTEX_9,
-        VERTEX_10,
-        VERTEX_11,
-        VERTEX_12,
-        VERTEX_13,
-        VERTEX_14,
-        VERTEX_15,
-        VERTEX_16,
-        VERTEX_17,
-        VERTEX_18,
-        VERTEX_19,
-        VERTEX_20,
-        VERTEX_21,
-        VERTEX_22,
-        VERTEX_23,
-        VERTEX_24,
-        VERTEX_25,
-        VERTEX_26,
-        VERTEX_27,
-        VERTEX_28,
-        VERTEX_29,
-        VERTEX_30,
-    ],
-    faces=[
-        [15, 16, 19, 20, 17, 18, 21, 22, 23, 29, 28, 25, 24, 27, 26],
-        [0, 11, 12, 9, 10, 13, 14, 8, 7, 6, 3, 2, 5, 4, 1],
-        [15, 26, 11, 0],
-        [15, 0, 1, 16],
-        [16, 1, 4, 19],
-        [19, 4, 5, 20],
-        [20, 5, 2, 17],
-        [17, 2, 3, 18],
-        [18, 3, 6, 21],
-        [21, 6, 7, 22],
-        [22, 7, 8, 23],
-        [23, 8, 14, 29],
-        [29, 14, 13, 28],
-        [28, 13, 10, 25],
-        [25, 10, 9, 24],
-        [24, 9, 12, 27],
-        [27, 12, 11, 26],
-    ],
-)
+# The model of K
+VERTEX_1 = Vertex(x=0.0, y=0.0, z=-0.5, id=0)
+VERTEX_2 = Vertex(x=0.32978723404255317, y=0.0, z=-0.5, id=1)
+VERTEX_3 = Vertex(x=0.6702127659574468, y=0.0, z=-0.5, id=2)
+VERTEX_4 = Vertex(x=1.0, y=0.0, z=-0.5, id=3)
+VERTEX_5 = Vertex(x=0.3404255319148936, y=0.45, z=-0.5, id=4)
+VERTEX_6 = Vertex(x=0.6595744680851063, y=0.45, z=-0.5, id=5)
+VERTEX_7 = Vertex(x=1.0, y=0.45, z=-0.5, id=6)
+VERTEX_8 = Vertex(x=0.8085106382978723, y=0.45, z=-0.5, id=7)
+VERTEX_9 = Vertex(x=1.0, y=0.5714285714285714, z=-0.5, id=8)
+VERTEX_10 = Vertex(x=0.3404255319148936, y=0.6714285714285714, z=-0.5, id=9)
+VERTEX_11 = Vertex(x=0.6595744680851063, y=0.6714285714285714, z=-0.5, id=10)
+VERTEX_12 = Vertex(x=0.0, y=1.0, z=-0.5, id=11)
+VERTEX_13 = Vertex(x=0.32978723404255317, y=1.0, z=-0.5, id=12)
+VERTEX_14 = Vertex(x=0.6702127659574468, y=1.0, z=-0.5, id=13)
+VERTEX_15 = Vertex(x=0.9893617021276596, y=1.0, z=-0.5, id=14)
+VERTEX_16 = Vertex(x=0.0, y=0.0, z=0.5, id=15)
+VERTEX_17 = Vertex(x=0.32978723404255317, y=0.0, z=0.5, id=16)
+VERTEX_18 = Vertex(x=0.6702127659574468, y=0.0, z=0.5, id=17)
+VERTEX_19 = Vertex(x=1.0, y=0.0, z=0.5, id=18)
+VERTEX_20 = Vertex(x=0.3404255319148936, y=0.45, z=0.5, id=19)
+VERTEX_21 = Vertex(x=0.6595744680851063, y=0.45, z=0.5, id=20)
+VERTEX_22 = Vertex(x=1.0, y=0.45, z=0.5, id=21)
+VERTEX_23 = Vertex(x=0.8085106382978723, y=0.45, z=0.5, id=22)
+VERTEX_24 = Vertex(x=1.0, y=0.5714285714285714, z=0.5, id=23)
+VERTEX_25 = Vertex(x=0.3404255319148936, y=0.6714285714285714, z=0.5, id=24)
+VERTEX_26 = Vertex(x=0.6595744680851063, y=0.6714285714285714, z=0.5, id=25)
+VERTEX_27 = Vertex(x=0.0, y=1.0, z=0.5, id=26)
+VERTEX_28 = Vertex(x=0.32978723404255317, y=1.0, z=0.5, id=27)
+VERTEX_29 = Vertex(x=0.6702127659574468, y=1.0, z=0.5, id=28)
+VERTEX_30 = Vertex(x=0.9893617021276596, y=1.0, z=0.5, id=29)
+
+
+vertices = [
+    VERTEX_1,
+    VERTEX_2,
+    VERTEX_3,
+    VERTEX_4,
+    VERTEX_5,
+    VERTEX_6,
+    VERTEX_7,
+    VERTEX_8,
+    VERTEX_9,
+    VERTEX_10,
+    VERTEX_11,
+    VERTEX_12,
+    VERTEX_13,
+    VERTEX_14,
+    VERTEX_15,
+    VERTEX_16,
+    VERTEX_17,
+    VERTEX_18,
+    VERTEX_19,
+    VERTEX_20,
+    VERTEX_21,
+    VERTEX_22,
+    VERTEX_23,
+    VERTEX_24,
+    VERTEX_25,
+    VERTEX_26,
+    VERTEX_27,
+    VERTEX_28,
+    VERTEX_29,
+    VERTEX_30,
+]
+
+faces = [[15, 16, 19, 20, 17, 18, 21, 22, 23, 29, 28, 25, 24, 27, 26], [0, 11, 12, 9, 10, 13, 14, 8, 7, 6, 3, 2, 5, 4, 1], [26, 11, 0, 15], [15, 0, 1, 16], [16, 1, 4, 19], [19, 4, 5, 20], [
+    20, 5, 2, 17], [17, 2, 3, 18], [18, 3, 6, 21], [21, 6, 7, 22], [22, 7, 8, 23], [23, 8, 14, 29], [29, 14, 13, 28], [28, 13, 10, 25], [25, 10, 9, 24], [24, 9, 12, 27], [27, 12, 11, 26]]
 
 # v 1.0 1.0 -0.5
 # v 1.3297872340425532 1.0 -0.5
@@ -120,8 +105,7 @@ K = Object(
 
 # f 16 17 20 21 18 19 22 23 24 30 29 26 25 28 27
 # f 1 12 13 10 11 14 15 9 8 7 4 3 6 5 2
-
-# f 16 27 12 1
+# f 27 12 1 16
 # f 16 1 2 17
 # f 17 2 5 20
 # f 20 5 6 21

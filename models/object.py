@@ -7,7 +7,7 @@ from utils.vectors_operations import matrixMultiplication
 
 class Object:
 
-    def __init__(self, vertices: list[Vertex], faces: list[list[int]]):
+    def __init__(self, vertices: list[Vertex], faces: list[list[int]], half_edges: list[HalfEdge] = None):
         """
         Creates an object from a list of vertices and faces
 
@@ -15,46 +15,15 @@ class Object:
         :param faces: list containing the indexes of the vertices that form a face
         """
 
-        self.vertexes_object, self.half_edges, self.face_objects = self.create_mesh(
-            vertices, faces)
+        if vertices is not None and faces is not None and half_edges is not None:
+            self.vertexes_object = vertices
+            self.half_edges = half_edges
+            self.face_objects = faces
+        else:
+            self.vertexes_object, self.half_edges, self.face_objects = self.create_mesh(
+                vertices, faces)
 
         self.geometric_center: Vertex = None
-
-    @property
-    def vertexes_object(self) -> list[Vertex]:
-        return self.__vertexes_object
-
-    @vertexes_object.setter
-    def vertexes_object(self, vertexes_object: list[Vertex]):
-        if type(vertexes_object).__name__ == "list":
-            self.__vertexes_object = vertexes_object
-        else:
-            raise TypeError(
-                "vertexes_object must be a list, but is {}".format(type(vertexes_object)))
-
-    @property
-    def half_edges(self) -> list[HalfEdge]:
-        return self.__half_edges
-
-    @half_edges.setter
-    def half_edges(self, half_edges: list[HalfEdge]):
-        if type(half_edges).__name__ == "list":
-            self.__half_edges = half_edges
-        else:
-            raise TypeError(
-                "half_edges must be a list, but is {}".format(type(half_edges)))
-
-    @property
-    def face_objects(self) -> list[Face]:
-        return self.__face_objects
-
-    @face_objects.setter
-    def face_objects(self, face_objects: list[Face]):
-        if type(face_objects).__name__ == "list":
-            self.__face_objects = face_objects
-        else:
-            raise TypeError(
-                "face_objects must be a list, but is {}".format(type(face_objects)))
 
     def create_mesh(self, vertices: list[Vertex], faces: list[list[int]]) -> tuple[list[Vertex], list[HalfEdge], list[Face]]:
         """
@@ -73,7 +42,8 @@ class Object:
         # Create vertex objects
         for i, vertex_coords in enumerate(vertices):
             vertex = Vertex(vertex_coords.x, vertex_coords.y,
-                            vertex_coords.z, id='v' + str(i+1))
+                            vertex_coords.z, id=vertex_coords.id if vertex_coords.id is not None else 'v' +
+                            str(i))
             vertex_objects.append(vertex)
 
         # Create face objects
@@ -98,6 +68,7 @@ class Object:
                 half_edge: HalfEdge = face_half_edges[j]
 
                 half_edge.origin = vertex_objects[face[j]]
+
                 if half_edge.origin.half_edge is None:
                     # Associate the vertex with the half-edge
                     vertex_objects[face[j]].half_edge = half_edge
@@ -171,34 +142,58 @@ class Object:
         n = len(self.vertexes_object)
         self.geometric_center = Vertex(sum_x/n, sum_y/n, sum_z/n)
 
-    def _rotate(self, angle: float, axis: str) -> None:
+    def _rotate(self, angle_1: float, angle_2: float, axis_1: str, axis_2: str) -> None:
         """
         Rotates the object itself
 
         :param angle: rotation angle
         :param axis: rotation axis
         """
-        if axis == 'x':
+        if axis_1 == 'x':
             matrix = [
                 [1, 0, 0, 0],
-                [0, math.cos(angle), -math.sin(angle), 0],
-                [0, math.sin(angle), math.cos(angle), 0],
+                [0, math.cos(angle_1), -math.sin(angle_1), 0],
+                [0, math.sin(angle_1), math.cos(angle_1), 0],
                 [0, 0, 0, 1]
             ]
-        elif axis == 'y':
+        elif axis_1 == 'y':
             matrix = [
-                [math.cos(angle), 0, math.sin(angle), 0],
+                [math.cos(angle_1), 0, math.sin(angle_1), 0],
                 [0, 1, 0, 0],
-                [-math.sin(angle), 0, math.cos(angle), 0],
+                [-math.sin(angle_1), 0, math.cos(angle_1), 0],
                 [0, 0, 0, 1]
             ]
-        elif axis == 'z':
+        elif axis_1 == 'z':
             matrix = [
-                [math.cos(angle), -math.sin(angle), 0, 0],
-                [math.sin(angle), math.cos(angle), 0, 0],
+                [math.cos(angle_1), -math.sin(angle_1), 0, 0],
+                [math.sin(angle_1), math.cos(angle_1), 0, 0],
                 [0, 0, 1, 0],
                 [0, 0, 0, 1]
             ]
+
+        if axis_2 == 'x':
+            matrix_2 = [
+                [1, 0, 0, 0],
+                [0, math.cos(angle_2), -math.sin(angle_2), 0],
+                [0, math.sin(angle_2), math.cos(angle_2), 0],
+                [0, 0, 0, 1]
+            ]
+        elif axis_2 == 'y':
+            matrix_2 = [
+                [math.cos(angle_2), 0, math.sin(angle_2), 0],
+                [0, 1, 0, 0],
+                [-math.sin(angle_2), 0, math.cos(angle_2), 0],
+                [0, 0, 0, 1]
+            ]
+        elif axis_2 == 'z':
+            matrix_2 = [
+                [math.cos(angle_2), -math.sin(angle_2), 0, 0],
+                [math.sin(angle_2), math.cos(angle_2), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ]
+
+        matrix = matrixMultiplication(matrix, matrix_2)
 
         self.apply_transformation(matrix)
 
@@ -253,43 +248,60 @@ class Object:
 
         self.apply_transformation(matrix)
 
-    import math
+    def create_half_edges(self, vertices, faces):
+        # Criar uma lista de half-edges
+        half_edges = [HalfEdge(i) for i in range(len(faces) * len(faces[0]))]
 
+        # Criar uma lista de vértices
+        vertices_list = [Vertex(i, *vertex_coords)
+                         for i, vertex_coords in enumerate(vertices)]
 
-def _euler_angles_from_rotation_matrix(matrix: list[list[float]]) -> tuple[float, float, float]:
-    """
-    Extracts Euler angles (roll, pitch, yaw) from a 3x3 rotation matrix.
+        # Lista para armazenar as faces
+        processed_faces = []
 
-    :param matrix: The 3x3 rotation matrix.
+        # Preencher os dados de half-edge
+        for i, face_vertices in enumerate(faces):
+            num_vertices = len(face_vertices)
 
-    :return: A tuple containing the Euler angles (roll, pitch, yaw) in radians.
-    """
-    # Check if the matrix is a valid rotation matrix
-    if len(matrix) != 3 or len(matrix[0]) != 3 or len(matrix[1]) != 3 or len(matrix[2]) != 3:
-        raise ValueError(
-            "Invalid rotation matrix: The matrix should be a 3x3 matrix.")
+            processed_face = []
+            for j in range(num_vertices):
+                v1 = face_vertices[j]
+                v2 = face_vertices[(j + 1) % num_vertices]
 
-    # Extract individual elements from the rotation matrix
-    r11, r12, r13 = matrix[0]
-    r21, r22, r23 = matrix[1]
-    r31, r32, r33 = matrix[2]
+                # Encontrar a próxima meia-aresta e vértice correspondente
+                next_half_edge = half_edges[i *
+                                            num_vertices + (j + 1) % num_vertices]
+                next_vertex = vertices_list[v2]
 
-    # Calculate the pitch angle (rotation around Y-axis)
-    pitch = math.atan2(-r31, math.sqrt(r11*r11 + r21*r21))
+                # Configurar a meia-aresta atual
+                half_edges[i * num_vertices + j].origin = vertices_list[v1]
+                half_edges[i * num_vertices + j].face = i
+                half_edges[i * num_vertices + j].next = next_half_edge
+                half_edges[i * num_vertices + j].prev = half_edges[i *
+                                                                   num_vertices + (j - 1) % num_vertices]
 
-    # Special case: pitch angle is +90 or -90 degrees (singularity)
-    if abs(pitch - math.pi/2) < 1e-6:
-        roll = 0
-        # Calculate the yaw angle (rotation around Z-axis)
-        yaw = math.atan2(r12, r22)
-    elif abs(pitch + math.pi/2) < 1e-6:
-        roll = 0
-        # Calculate the yaw angle (rotation around Z-axis)
-        yaw = math.atan2(-r12, -r22)
-    else:
-        # Calculate the roll angle (rotation around X-axis)
-        roll = math.atan2(r21, r11)
-        # Calculate the yaw angle (rotation around Z-axis)
-        yaw = math.atan2(r32, r33)
+                # Configurar a referência do vértice para uma das meia-arestas associadas
+                vertices_list[v1].edge = half_edges[i * num_vertices + j]
 
-    return roll, pitch, yaw
+                # Procurar pela meia-aresta gêmea
+                twin_found = False
+                for k in range(len(half_edges)):
+                    if half_edges[k].origin == next_vertex and half_edges[k].next.origin == vertices_list[v1]:
+                        half_edges[i * num_vertices + j].twin = half_edges[k]
+                        half_edges[k].twin = half_edges[i * num_vertices + j]
+                        twin_found = True
+                        break
+
+                # Se não encontrar a meia-aresta gêmea, criá-la
+                if not twin_found:
+                    twin_half_edge = HalfEdge(len(half_edges))
+                    twin_half_edge.origin = next_vertex
+                    twin_half_edge.twin = half_edges[i * num_vertices + j]
+                    half_edges[i * num_vertices + j].twin = twin_half_edge
+                    half_edges.append(twin_half_edge)
+
+                processed_face.append(half_edges[i * num_vertices + j])
+
+            processed_faces.append(processed_face)
+
+        return vertices_list, half_edges, processed_faces

@@ -1,23 +1,44 @@
 from models.vertex import Vertex
-from models.object import Object
 
 # The model of U
-VERTEX_1 = Vertex(x=1.0, y=1.0, z=-0.5, id=0)
-VERTEX_2 = Vertex(x=1.3225806451612903, y=1.0, z=-0.5, id=1)
-VERTEX_3 = Vertex(x=1.6666666666666665, y=1.0, z=-0.5, id=2)
-VERTEX_4 = Vertex(x=2.0, y=1.0, z=-0.5, id=3)
-VERTEX_5 = Vertex(x=1.3333333333333333, y=1.7785714285714285, z=-0.5, id=4)
-VERTEX_6 = Vertex(x=1.6559139784946235, y=1.7785714285714285, z=-0.5, id=5)
-VERTEX_7 = Vertex(x=1.0, y=2.0, z=-0.5, id=6)
-VERTEX_8 = Vertex(x=2.0, y=2.0, z=-0.5, id=7)
-VERTEX_9 = Vertex(x=-1.0, y=0.0, z=0.5, id=8)
-VERTEX_10 = Vertex(x=-0.6774193548387097, y=0.0, z=0.5, id=9)
-VERTEX_11 = Vertex(x=-0.33333333333333337, y=0.0, z=0.5, id=10)
-VERTEX_12 = Vertex(x=0.0, y=0.0, z=0.5, id=11)
-VERTEX_13 = Vertex(x=-0.6666666666666667, y=0.7785714285714286, z=0.5, id=12)
-VERTEX_14 = Vertex(x=-0.34408602150537637, y=0.7785714285714286, z=0.5, id=13)
-VERTEX_15 = Vertex(x=-1.0, y=1.0, z=0.5, id=14)
-VERTEX_16 = Vertex(x=0.0, y=1.0, z=0.5, id=15)
+VERTEX_1 = Vertex(x=0.0, y=0.0, z=-0.5, id=0)
+VERTEX_2 = Vertex(x=0.3225806451612903, y=0.0, z=-0.5, id=1)
+VERTEX_3 = Vertex(x=0.6666666666666666, y=0.0, z=-0.5, id=2)
+VERTEX_4 = Vertex(x=1.0, y=0.0, z=-0.5, id=3)
+VERTEX_5 = Vertex(x=0.3333333333333333, y=0.7785714285714286, z=-0.5, id=4)
+VERTEX_6 = Vertex(x=0.6559139784946236, y=0.7785714285714286, z=-0.5, id=5)
+VERTEX_7 = Vertex(x=0.0, y=1.0, z=-0.5, id=6)
+VERTEX_8 = Vertex(x=1.0, y=1.0, z=-0.5, id=7)
+VERTEX_9 = Vertex(x=0.0, y=0.0, z=0.5, id=8)
+VERTEX_10 = Vertex(x=0.3225806451612903, y=0.0, z=0.5, id=9)
+VERTEX_11 = Vertex(x=0.6666666666666666, y=0.0, z=0.5, id=10)
+VERTEX_12 = Vertex(x=1.0, y=0.0, z=0.5, id=11)
+VERTEX_13 = Vertex(x=0.3333333333333333, y=0.7785714285714286, z=0.5, id=12)
+VERTEX_14 = Vertex(x=0.6559139784946236, y=0.7785714285714286, z=0.5, id=13)
+VERTEX_15 = Vertex(x=0.0, y=1.0, z=0.5, id=14)
+VERTEX_16 = Vertex(x=1.0, y=1.0, z=0.5, id=15)
+
+vertices = [
+    VERTEX_1,
+    VERTEX_2,
+    VERTEX_3,
+    VERTEX_4,
+    VERTEX_5,
+    VERTEX_6,
+    VERTEX_7,
+    VERTEX_8,
+    VERTEX_9,
+    VERTEX_10,
+    VERTEX_11,
+    VERTEX_12,
+    VERTEX_13,
+    VERTEX_14,
+    VERTEX_15,
+    VERTEX_16,
+]
+
+faces = [[8, 9, 12, 13, 10, 11, 15, 14], [0, 6, 7, 3, 2, 5, 4, 1], [14, 6, 0, 8], [8, 0, 1, 9], [
+    9, 1, 4, 12], [12, 4, 5, 13], [13, 5, 2, 10], [10, 2, 3, 11], [11, 3, 7, 15], [15, 7, 6, 14]]
 
 # v 1.0 1.0 -0.5
 # v 1.3225806451612903 1.0 -0.5
@@ -35,3 +56,14 @@ VERTEX_16 = Vertex(x=0.0, y=1.0, z=0.5, id=15)
 # v -0.34408602150537637 0.7785714285714286 0.5
 # v -1.0 1.0 0.5
 # v 0.0 1.0 0.5
+
+# f 9 10 13 14 11 12 16 15
+# f 1 7 8 4 3 6 5 2
+# f 15 7 1 9
+# f 9 1 2 10
+# f 10 2 5 13
+# f 13 5 6 14
+# f 14 6 3 11
+# f 11 3 4 12
+# f 12 4 8 16
+# f 16 8 7 15

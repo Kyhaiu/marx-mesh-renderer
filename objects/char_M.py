@@ -1,33 +1,99 @@
 from models.vertex import Vertex
-from models.object import Object
 
 # The model of M
-VERTEX_1 = Vertex(x=1.0, y=1.0, z=-0.5, id=0)
-VERTEX_2 = Vertex(x=1.8903225806451613, y=1.0, z=-0.5, id=1)
-VERTEX_3 = Vertex(x=2.0, y=1.1285714285714286, z=-0.5, id=2)
-VERTEX_4 = Vertex(x=1.2, y=1.2214285714285715, z=-0.5, id=3)
-VERTEX_5 = Vertex(x=1.4, y=1.2214285714285715, z=-0.5, id=4)
-VERTEX_6 = Vertex(x=1.6, y=1.2214285714285715, z=-0.5, id=5)
-VERTEX_7 = Vertex(x=1.8, y=1.2214285714285715, z=-0.5, id=6)
-VERTEX_8 = Vertex(x=1.0, y=2.0, z=-0.5, id=7)
-VERTEX_9 = Vertex(x=1.2, y=2.0, z=-0.5, id=8)
-VERTEX_10 = Vertex(x=1.4, y=2.0, z=-0.5, id=9)
-VERTEX_11 = Vertex(x=1.6, y=2.0, z=-0.5, id=10)
-VERTEX_12 = Vertex(x=1.8, y=2.0, z=-0.5, id=11)
-VERTEX_13 = Vertex(x=2.0, y=2.0, z=-0.5, id=12)
-VERTEX_14 = Vertex(x=-1.0, y=0.0, z=0.5, id=13)
-VERTEX_15 = Vertex(x=-0.10967741935483866, y=0.0, z=0.5, id=14)
-VERTEX_16 = Vertex(x=0.0, y=0.12857142857142856, z=0.5, id=15)
-VERTEX_17 = Vertex(x=-0.8, y=0.22142857142857142, z=0.5, id=16)
-VERTEX_18 = Vertex(x=-0.6, y=0.22142857142857142, z=0.5, id=17)
-VERTEX_19 = Vertex(x=-0.4, y=0.22142857142857142, z=0.5, id=18)
-VERTEX_20 = Vertex(x=-0.19999999999999996, y=0.22142857142857142, z=0.5, id=19)
-VERTEX_21 = Vertex(x=-1.0, y=1.0, z=0.5, id=20)
-VERTEX_22 = Vertex(x=-0.8, y=1.0, z=0.5, id=21)
-VERTEX_23 = Vertex(x=-0.6, y=1.0, z=0.5, id=22)
-VERTEX_24 = Vertex(x=-0.4, y=1.0, z=0.5, id=23)
-VERTEX_25 = Vertex(x=-0.19999999999999996, y=1.0, z=0.5, id=24)
-VERTEX_26 = Vertex(x=0.0, y=1.0, z=0.5, id=25)
+VERTEX_1 = Vertex(x=0.0, y=0.0, z=-0.5, id=0)
+VERTEX_2 = Vertex(x=0.8903225806451613, y=0.0, z=-0.5, id=1)
+VERTEX_3 = Vertex(x=1.0, y=0.12857142857142856, z=-0.5, id=2)
+VERTEX_4 = Vertex(x=0.2, y=0.22142857142857142, z=-0.5, id=3)
+VERTEX_5 = Vertex(x=0.4, y=0.22142857142857142, z=-0.5, id=4)
+VERTEX_6 = Vertex(x=0.6, y=0.22142857142857142, z=-0.5, id=5)
+VERTEX_7 = Vertex(x=0.8, y=0.22142857142857142, z=-0.5, id=6)
+VERTEX_8 = Vertex(x=0.0, y=1.0, z=-0.5, id=7)
+VERTEX_9 = Vertex(x=0.2, y=1.0, z=-0.5, id=8)
+VERTEX_10 = Vertex(x=0.4, y=1.0, z=-0.5, id=9)
+VERTEX_11 = Vertex(x=0.6, y=1.0, z=-0.5, id=10)
+VERTEX_12 = Vertex(x=0.8, y=1.0, z=-0.5, id=11)
+VERTEX_13 = Vertex(x=1.0, y=1.0, z=-0.5, id=12)
+VERTEX_14 = Vertex(x=0.0, y=0.0, z=0.5, id=13)
+VERTEX_15 = Vertex(x=0.8903225806451613, y=0.0, z=0.5, id=14)
+VERTEX_16 = Vertex(x=1.0, y=0.12857142857142856, z=0.5, id=15)
+VERTEX_17 = Vertex(x=0.2, y=0.22142857142857142, z=0.5, id=16)
+VERTEX_18 = Vertex(x=0.4, y=0.22142857142857142, z=0.5, id=17)
+VERTEX_19 = Vertex(x=0.6, y=0.22142857142857142, z=0.5, id=18)
+VERTEX_20 = Vertex(x=0.8, y=0.22142857142857142, z=0.5, id=19)
+VERTEX_21 = Vertex(x=0.0, y=1.0, z=0.5, id=20)
+VERTEX_22 = Vertex(x=0.2, y=1.0, z=0.5, id=21)
+VERTEX_23 = Vertex(x=0.4, y=1.0, z=0.5, id=22)
+VERTEX_24 = Vertex(x=0.6, y=1.0, z=0.5, id=23)
+VERTEX_25 = Vertex(x=0.8, y=1.0, z=0.5, id=24)
+VERTEX_26 = Vertex(x=1.0, y=1.0, z=0.5, id=25)
+
+
+faces = [
+    [13, 14, 15, 25, 24, 19, 18, 23, 22, 17, 16, 21, 20],
+    [0, 7, 8, 3, 4, 9, 10, 5, 6, 11, 12, 2, 1],
+    [13, 20, 7, 0],
+    [0, 1, 14, 13],
+    [14, 1, 2, 15],
+    [15, 2, 12, 25],
+    [25, 12, 11, 24],
+    [24, 11, 6, 19],
+    [19, 6, 5, 18],
+    [18, 5, 10, 23],
+    [23, 10, 9, 22],
+    [22, 9, 4, 17],
+    [17, 4, 3, 16],
+    [16, 3, 8, 21],
+    [21, 8, 7, 20],
+]
+
+vertices = [
+    VERTEX_1,
+    VERTEX_2,
+    VERTEX_3,
+    VERTEX_4,
+    VERTEX_5,
+    VERTEX_6,
+    VERTEX_7,
+    VERTEX_8,
+    VERTEX_9,
+    VERTEX_10,
+    VERTEX_11,
+    VERTEX_12,
+    VERTEX_13,
+    VERTEX_14,
+    VERTEX_15,
+    VERTEX_16,
+    VERTEX_17,
+    VERTEX_18,
+    VERTEX_19,
+    VERTEX_20,
+    VERTEX_21,
+    VERTEX_22,
+    VERTEX_23,
+    VERTEX_24,
+    VERTEX_25,
+    VERTEX_26,
+]
+
+
+# f 14 15 16 26 25 20 19 24 23 18 17 22 21
+# f 1 8 9 4 5 10 11 6 7 12 13 3 2
+
+# f 14 21 8 1
+# f 1 2 15 14
+# f 15 2 3 16
+# f 16 3 13 26
+# f 26 13 12 25
+# f 25 12 7 20
+# f 20 7 6 19
+# f 19 6 11 24
+# f 24 11 10 23
+# f 23 10 5 18
+# f 18 5 4 17
+# f 17 4 9 22
+# f 22 9 8 21
+
 
 # v 1.0 1.0 -0.5
 # v 1.8903225806451613 1.0 -0.5
